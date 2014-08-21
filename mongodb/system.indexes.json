@@ -8,18 +8,4 @@
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.OgrLayer", "name" : "_id_" }
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Template", "name" : "_id_" }
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Translation", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.LogEntry", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.tasks", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.FileContent", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.File", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.View", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Table", "name" : "_id_" }
-{ "v" : 1, "key" : { "locale" : 1, "object_class" : 1, "foreign_key" : 1 }, "ns" : "aire_test.Translation", "name" : "translations_lookup_idx" }
-{ "v" : 1, "key" : { "locale" : 1, "object_class" : 1, "foreign_key" : 1, "field" : 1 }, "unique" : true, "ns" : "aire_test.Translation", "name" : "lookup_unique_idx" }
-{ "v" : 1, "key" : { "loggedAt" : 1 }, "ns" : "aire_test.LogEntry", "name" : "loggedAt_1" }
-{ "v" : 1, "key" : { "objectClass" : 1 }, "ns" : "aire_test.LogEntry", "name" : "objectClass_1" }
-{ "v" : 1, "key" : { "username" : 1 }, "ns" : "aire_test.LogEntry", "name" : "username_1" }
-{ "v" : 1, "key" : { "dataSource" : 1 }, "ns" : "aire_test.OgrLayer", "name" : "dataSource_1" }
-{ "v" : 1, "key" : { "name" : 1 }, "ns" : "aire_test.OgrLayer", "name" : "name_1" }
-{ "v" : 1, "key" : { "category" : 1 }, "ns" : "aire_test.MapCollection", "name" : "category_1" }
-{ "v" : 1, "key" : { "table" : 1 }, "ns" : "aire_test.View", "name" : "table_1" }
+{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.system.json", "name" : "_id_" }
