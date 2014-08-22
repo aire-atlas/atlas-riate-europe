@@ -34,3 +34,14 @@
 { "_id" : { "$oid" : "53f6a488eb1d8ed24c475795" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Template", "name" : "_id_" }
 { "_id" : { "$oid" : "53f6a488eb1d8ed24c475796" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Translation", "name" : "_id_" }
 { "_id" : { "$oid" : "53f6a488eb1d8ed24c475797" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.system.json", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c475798" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.ColorFamily", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c475799" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Display", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579a" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.GdalDataset", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579b" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Map", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579c" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.MapCategory", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579d" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.MapCollection", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579e" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.OgrDataSource", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c47579f" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.OgrLayer", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c4757a0" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Template", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c4757a1" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Translation", "name" : "_id_" }
+{ "_id" : { "$oid" : "53f6ab09eb1d8ed24c4757a2" }, "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.system.json", "name" : "_id_" }
