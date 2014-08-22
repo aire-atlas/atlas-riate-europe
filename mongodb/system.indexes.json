@@ -8,4 +8,3 @@
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.OgrLayer", "name" : "_id_" }
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Template", "name" : "_id_" }
 { "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.Translation", "name" : "_id_" }
-{ "v" : 1, "key" : { "_id" : 1 }, "ns" : "aire_test.system.json", "name" : "_id_" }
