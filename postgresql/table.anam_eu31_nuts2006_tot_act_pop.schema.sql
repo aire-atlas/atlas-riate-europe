@@ -4,26 +4,76 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 SET search_path = public, pg_catalog;
 
---
--- Name: anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE SET; Schema: public; Owner: aire
---
+SET default_tablespace = '';
 
-SELECT pg_catalog.setval('anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq', 1, false);
-
+SET default_with_oids = false;
 
 --
--- Data for Name: anam_eu31_nuts2006_tot_act_pop; Type: TABLE DATA; Schema: public; Owner: aire
+-- Name: anam_eu31_nuts2006_tot_act_pop; Type: TABLE; Schema: public; Owner: aire; Tablespace: 
 --
 
-COPY anam_eu31_nuts2006_tot_act_pop (ogc_fid, id, fid_1, objectid, id_1, name, level0, level1, level2, level23, level3, zoning, data__leve, data__nuts, tot_act_po, data__s) FROM stdin;
-\.
+CREATE TABLE anam_eu31_nuts2006_tot_act_pop (
+    ogc_fid integer NOT NULL,
+    id character(4),
+    fid_1 numeric(9,0),
+    objectid numeric(7,2),
+    id_1 character(4),
+    name character(59),
+    level0 numeric(4,2),
+    level1 numeric(4,2),
+    level2 numeric(4,2),
+    level23 numeric(4,2),
+    level3 numeric(19,15),
+    zoning character(254),
+    data__leve character(6),
+    data__nuts numeric(7,2),
+    tot_act_po numeric(7,2),
+    data__s numeric(4,2)
+);
+
+
+ALTER TABLE public.anam_eu31_nuts2006_tot_act_pop OWNER TO aire;
+
+--
+-- Name: anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
+--
+
+CREATE SEQUENCE anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq OWNER TO aire;
+
+--
+-- Name: anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
+--
+
+ALTER SEQUENCE anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq OWNED BY anam_eu31_nuts2006_tot_act_pop.ogc_fid;
+
+
+--
+-- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
+--
+
+ALTER TABLE ONLY anam_eu31_nuts2006_tot_act_pop ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq'::regclass);
+
+
+--
+-- Name: anam_eu31_nuts2006_tot_act_pop_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace: 
+--
+
+ALTER TABLE ONLY anam_eu31_nuts2006_tot_act_pop
+    ADD CONSTRAINT anam_eu31_nuts2006_tot_act_pop_pk PRIMARY KEY (ogc_fid);
 
 
 --

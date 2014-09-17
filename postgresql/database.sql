@@ -4,19 +4,23 @@
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
 --
--- Name: plpgsql; Type: PROCEDURAL LANGUAGE; Schema: -; Owner: aire
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
-CREATE PROCEDURAL LANGUAGE plpgsql;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
-ALTER PROCEDURAL LANGUAGE plpgsql OWNER TO aire;
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
 
 SET search_path = public, pg_catalog;
 
@@ -581,17 +585,6 @@ CREATE FUNCTION _st_askml(integer, geography, integer) RETURNS text
 ALTER FUNCTION public._st_askml(integer, geography, integer) OWNER TO aire;
 
 --
--- Name: _st_bestsrid(geography, geography); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION _st_bestsrid(geography, geography) RETURNS integer
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'geography_bestsrid';
-
-
-ALTER FUNCTION public._st_bestsrid(geography, geography) OWNER TO aire;
-
---
 -- Name: _st_bestsrid(geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -601,6 +594,17 @@ CREATE FUNCTION _st_bestsrid(geography) RETURNS integer
 
 
 ALTER FUNCTION public._st_bestsrid(geography) OWNER TO aire;
+
+--
+-- Name: _st_bestsrid(geography, geography); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION _st_bestsrid(geography, geography) RETURNS integer
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'geography_bestsrid';
+
+
+ALTER FUNCTION public._st_bestsrid(geography, geography) OWNER TO aire;
 
 --
 -- Name: _st_buffer(geometry, double precision, cstring); Type: FUNCTION; Schema: public; Owner: aire
@@ -984,6 +988,42 @@ CREATE FUNCTION addbbox(geometry) RETURNS geometry
 ALTER FUNCTION public.addbbox(geometry) OWNER TO aire;
 
 --
+-- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION addgeometrycolumn(character varying, character varying, integer, character varying, integer) RETURNS text
+    LANGUAGE plpgsql STRICT
+    AS $_$
+DECLARE
+	ret  text;
+BEGIN
+	SELECT AddGeometryColumn('','',$1,$2,$3,$4,$5) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, integer, character varying, integer) OWNER TO aire;
+
+--
+-- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) RETURNS text
+    LANGUAGE plpgsql STABLE STRICT
+    AS $_$
+DECLARE
+	ret  text;
+BEGIN
+	SELECT AddGeometryColumn('',$1,$2,$3,$4,$5,$6) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) OWNER TO aire;
+
+--
 -- Name: addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1183,42 +1223,6 @@ $_$;
 ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, character varying, character varying, integer, character varying, integer) OWNER TO aire;
 
 --
--- Name: addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) RETURNS text
-    LANGUAGE plpgsql STABLE STRICT
-    AS $_$
-DECLARE
-	ret  text;
-BEGIN
-	SELECT AddGeometryColumn('',$1,$2,$3,$4,$5,$6) into ret;
-	RETURN ret;
-END;
-$_$;
-
-
-ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, character varying, integer, character varying, integer) OWNER TO aire;
-
---
--- Name: addgeometrycolumn(character varying, character varying, integer, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION addgeometrycolumn(character varying, character varying, integer, character varying, integer) RETURNS text
-    LANGUAGE plpgsql STRICT
-    AS $_$
-DECLARE
-	ret  text;
-BEGIN
-	SELECT AddGeometryColumn('','',$1,$2,$3,$4,$5) into ret;
-	RETURN ret;
-END;
-$_$;
-
-
-ALTER FUNCTION public.addgeometrycolumn(character varying, character varying, integer, character varying, integer) OWNER TO aire;
-
---
 -- Name: addpoint(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1241,17 +1245,6 @@ CREATE FUNCTION addpoint(geometry, geometry, integer) RETURNS geometry
 ALTER FUNCTION public.addpoint(geometry, geometry, integer) OWNER TO aire;
 
 --
--- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_affine';
-
-
-ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1261,6 +1254,17 @@ CREATE FUNCTION affine(geometry, double precision, double precision, double prec
 
 
 ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_affine';
+
+
+ALTER FUNCTION public.affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: area(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -1340,17 +1344,6 @@ CREATE FUNCTION asewkt(geometry) RETURNS text
 ALTER FUNCTION public.asewkt(geometry) OWNER TO aire;
 
 --
--- Name: asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION asgml(geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
-
-
-ALTER FUNCTION public.asgml(geometry, integer) OWNER TO aire;
-
---
 -- Name: asgml(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1360,6 +1353,17 @@ CREATE FUNCTION asgml(geometry) RETURNS text
 
 
 ALTER FUNCTION public.asgml(geometry) OWNER TO aire;
+
+--
+-- Name: asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION asgml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
+
+
+ALTER FUNCTION public.asgml(geometry, integer) OWNER TO aire;
 
 --
 -- Name: ashexewkb(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -1384,17 +1388,6 @@ CREATE FUNCTION ashexewkb(geometry, text) RETURNS text
 ALTER FUNCTION public.ashexewkb(geometry, text) OWNER TO aire;
 
 --
--- Name: askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION askml(geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsKML(2, transform($1,4326), $2)$_$;
-
-
-ALTER FUNCTION public.askml(geometry, integer) OWNER TO aire;
-
---
 -- Name: askml(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1404,6 +1397,17 @@ CREATE FUNCTION askml(geometry) RETURNS text
 
 
 ALTER FUNCTION public.askml(geometry) OWNER TO aire;
+
+--
+-- Name: askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION askml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML(2, transform($1,4326), $2)$_$;
+
+
+ALTER FUNCTION public.askml(geometry, integer) OWNER TO aire;
 
 --
 -- Name: askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -1417,15 +1421,15 @@ CREATE FUNCTION askml(integer, geometry, integer) RETURNS text
 ALTER FUNCTION public.askml(integer, geometry, integer) OWNER TO aire;
 
 --
--- Name: assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: assvg(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION assvg(geometry, integer, integer) RETURNS text
+CREATE FUNCTION assvg(geometry) RETURNS text
     LANGUAGE c IMMUTABLE STRICT
     AS '$libdir/postgis-1.5', 'assvg_geometry';
 
 
-ALTER FUNCTION public.assvg(geometry, integer, integer) OWNER TO aire;
+ALTER FUNCTION public.assvg(geometry) OWNER TO aire;
 
 --
 -- Name: assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -1439,15 +1443,15 @@ CREATE FUNCTION assvg(geometry, integer) RETURNS text
 ALTER FUNCTION public.assvg(geometry, integer) OWNER TO aire;
 
 --
--- Name: assvg(geometry); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION assvg(geometry) RETURNS text
+CREATE FUNCTION assvg(geometry, integer, integer) RETURNS text
     LANGUAGE c IMMUTABLE STRICT
     AS '$libdir/postgis-1.5', 'assvg_geometry';
 
 
-ALTER FUNCTION public.assvg(geometry) OWNER TO aire;
+ALTER FUNCTION public.assvg(geometry, integer, integer) OWNER TO aire;
 
 --
 -- Name: astext(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -1700,6 +1704,17 @@ CREATE FUNCTION centroid(geometry) RETURNS geometry
 ALTER FUNCTION public.centroid(geometry) OWNER TO aire;
 
 --
+-- Name: checkauth(text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION checkauth(text, text) RETURNS integer
+    LANGUAGE sql
+    AS $_$ SELECT CheckAuth('', $1, $2) $_$;
+
+
+ALTER FUNCTION public.checkauth(text, text) OWNER TO aire;
+
+--
 -- Name: checkauth(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -1732,17 +1747,6 @@ $_$;
 
 
 ALTER FUNCTION public.checkauth(text, text, text) OWNER TO aire;
-
---
--- Name: checkauth(text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION checkauth(text, text) RETURNS integer
-    LANGUAGE sql
-    AS $_$ SELECT CheckAuth('', $1, $2) $_$;
-
-
-ALTER FUNCTION public.checkauth(text, text) OWNER TO aire;
 
 --
 -- Name: checkauthtrigger(); Type: FUNCTION; Schema: public; Owner: aire
@@ -1976,6 +1980,42 @@ CREATE FUNCTION dropbbox(geometry) RETURNS geometry
 ALTER FUNCTION public.dropbbox(geometry) OWNER TO aire;
 
 --
+-- Name: dropgeometrycolumn(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION dropgeometrycolumn(character varying, character varying) RETURNS text
+    LANGUAGE plpgsql STRICT
+    AS $_$
+DECLARE
+	ret text;
+BEGIN
+	SELECT DropGeometryColumn('','',$1,$2) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying) OWNER TO aire;
+
+--
+-- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION dropgeometrycolumn(character varying, character varying, character varying) RETURNS text
+    LANGUAGE plpgsql STRICT
+    AS $_$
+DECLARE
+	ret text;
+BEGIN
+	SELECT DropGeometryColumn('',$1,$2,$3) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying, character varying) OWNER TO aire;
+
+--
 -- Name: dropgeometrycolumn(character varying, character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -2042,40 +2082,26 @@ $_$;
 ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying, character varying, character varying) OWNER TO aire;
 
 --
--- Name: dropgeometrycolumn(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: dropgeometrytable(character varying); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION dropgeometrycolumn(character varying, character varying, character varying) RETURNS text
-    LANGUAGE plpgsql STRICT
-    AS $_$
-DECLARE
-	ret text;
-BEGIN
-	SELECT DropGeometryColumn('',$1,$2,$3) into ret;
-	RETURN ret;
-END;
-$_$;
+CREATE FUNCTION dropgeometrytable(character varying) RETURNS text
+    LANGUAGE sql STRICT
+    AS $_$ SELECT DropGeometryTable('','',$1) $_$;
 
 
-ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying, character varying) OWNER TO aire;
+ALTER FUNCTION public.dropgeometrytable(character varying) OWNER TO aire;
 
 --
--- Name: dropgeometrycolumn(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: dropgeometrytable(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION dropgeometrycolumn(character varying, character varying) RETURNS text
-    LANGUAGE plpgsql STRICT
-    AS $_$
-DECLARE
-	ret text;
-BEGIN
-	SELECT DropGeometryColumn('','',$1,$2) into ret;
-	RETURN ret;
-END;
-$_$;
+CREATE FUNCTION dropgeometrytable(character varying, character varying) RETURNS text
+    LANGUAGE sql STRICT
+    AS $_$ SELECT DropGeometryTable('',$1,$2) $_$;
 
 
-ALTER FUNCTION public.dropgeometrycolumn(character varying, character varying) OWNER TO aire;
+ALTER FUNCTION public.dropgeometrytable(character varying, character varying) OWNER TO aire;
 
 --
 -- Name: dropgeometrytable(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
@@ -2118,28 +2144,6 @@ $_$;
 
 
 ALTER FUNCTION public.dropgeometrytable(character varying, character varying, character varying) OWNER TO aire;
-
---
--- Name: dropgeometrytable(character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION dropgeometrytable(character varying, character varying) RETURNS text
-    LANGUAGE sql STRICT
-    AS $_$ SELECT DropGeometryTable('',$1,$2) $_$;
-
-
-ALTER FUNCTION public.dropgeometrytable(character varying, character varying) OWNER TO aire;
-
---
--- Name: dropgeometrytable(character varying); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION dropgeometrytable(character varying) RETURNS text
-    LANGUAGE sql STRICT
-    AS $_$ SELECT DropGeometryTable('','',$1) $_$;
-
-
-ALTER FUNCTION public.dropgeometrytable(character varying) OWNER TO aire;
 
 --
 -- Name: dump(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -2256,17 +2260,6 @@ CREATE FUNCTION equals(geometry, geometry) RETURNS boolean
 ALTER FUNCTION public.equals(geometry, geometry) OWNER TO aire;
 
 --
--- Name: estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION estimated_extent(text, text, text) RETURNS box2d
-    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
-    AS '$libdir/postgis-1.5', 'LWGEOM_estimated_extent';
-
-
-ALTER FUNCTION public.estimated_extent(text, text, text) OWNER TO aire;
-
---
 -- Name: estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -2276,6 +2269,17 @@ CREATE FUNCTION estimated_extent(text, text) RETURNS box2d
 
 
 ALTER FUNCTION public.estimated_extent(text, text) OWNER TO aire;
+
+--
+-- Name: estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION estimated_extent(text, text, text) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
+    AS '$libdir/postgis-1.5', 'LWGEOM_estimated_extent';
+
+
+ALTER FUNCTION public.estimated_extent(text, text, text) OWNER TO aire;
 
 --
 -- Name: expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -2333,6 +2337,28 @@ CREATE FUNCTION factor(chip) RETURNS real
 ALTER FUNCTION public.factor(chip) OWNER TO aire;
 
 --
+-- Name: find_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION find_extent(text, text) RETURNS box2d
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	tablename alias for $1;
+	columnname alias for $2;
+	myrec RECORD;
+
+BEGIN
+	FOR myrec IN EXECUTE 'SELECT extent("' || columnname || '") FROM "' || tablename || '"' LOOP
+		return myrec.extent;
+	END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION public.find_extent(text, text) OWNER TO aire;
+
+--
 -- Name: find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -2354,28 +2380,6 @@ $_$;
 
 
 ALTER FUNCTION public.find_extent(text, text, text) OWNER TO aire;
-
---
--- Name: find_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION find_extent(text, text) RETURNS box2d
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $_$
-DECLARE
-	tablename alias for $1;
-	columnname alias for $2;
-	myrec RECORD;
-
-BEGIN
-	FOR myrec IN EXECUTE 'SELECT extent("' || columnname || '") FROM "' || tablename || '"' LOOP
-		return myrec.extent;
-	END LOOP;
-END;
-$_$;
-
-
-ALTER FUNCTION public.find_extent(text, text) OWNER TO aire;
 
 --
 -- Name: find_srid(character varying, character varying, character varying); Type: FUNCTION; Schema: public; Owner: aire
@@ -2563,17 +2567,6 @@ CREATE FUNCTION forcerhr(geometry) RETURNS geometry
 ALTER FUNCTION public.forcerhr(geometry) OWNER TO aire;
 
 --
--- Name: geography(geography, integer, boolean); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION geography(geography, integer, boolean) RETURNS geography
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'geography_enforce_typmod';
-
-
-ALTER FUNCTION public.geography(geography, integer, boolean) OWNER TO aire;
-
---
 -- Name: geography(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -2583,6 +2576,17 @@ CREATE FUNCTION geography(geometry) RETURNS geography
 
 
 ALTER FUNCTION public.geography(geometry) OWNER TO aire;
+
+--
+-- Name: geography(geography, integer, boolean); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION geography(geography, integer, boolean) RETURNS geography
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'geography_enforce_typmod';
+
+
+ALTER FUNCTION public.geography(geography, integer, boolean) OWNER TO aire;
 
 --
 -- Name: geography_cmp(geography, geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -2794,22 +2798,6 @@ CREATE FUNCTION geography_typmod_type(integer) RETURNS text
 ALTER FUNCTION public.geography_typmod_type(integer) OWNER TO aire;
 
 --
--- Name: geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION geomcollfromtext(text, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE
-	WHEN geometrytype(GeomFromText($1, $2)) = 'GEOMETRYCOLLECTION'
-	THEN GeomFromText($1,$2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.geomcollfromtext(text, integer) OWNER TO aire;
-
---
 -- Name: geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -2826,20 +2814,20 @@ CREATE FUNCTION geomcollfromtext(text) RETURNS geometry
 ALTER FUNCTION public.geomcollfromtext(text) OWNER TO aire;
 
 --
--- Name: geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION geomcollfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION geomcollfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
 	SELECT CASE
-	WHEN geometrytype(GeomFromWKB($1, $2)) = 'GEOMETRYCOLLECTION'
-	THEN GeomFromWKB($1, $2)
+	WHEN geometrytype(GeomFromText($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromText($1,$2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.geomcollfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.geomcollfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -2856,6 +2844,22 @@ CREATE FUNCTION geomcollfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.geomcollfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION geomcollfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromWKB($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.geomcollfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: geometry(box3d_extent); Type: FUNCTION; Schema: public; Owner: aire
@@ -3585,21 +3589,6 @@ CREATE FUNCTION linefromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.linefromtext(text, integer) OWNER TO aire;
 
 --
--- Name: linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION linefromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.linefromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -3613,6 +3602,21 @@ CREATE FUNCTION linefromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.linefromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION linefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linefromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: linemerge(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -3648,21 +3652,6 @@ CREATE FUNCTION linestringfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.linestringfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION linestringfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.linestringfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -3676,6 +3665,21 @@ CREATE FUNCTION linestringfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.linestringfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION linestringfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.linestringfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: locate_along_measure(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -3698,6 +3702,39 @@ CREATE FUNCTION locate_between_measures(geometry, double precision, double preci
 
 
 ALTER FUNCTION public.locate_between_measures(geometry, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: lockrow(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION lockrow(text, text, text) RETURNS integer
+    LANGUAGE sql STRICT
+    AS $_$ SELECT LockRow(current_schema(), $1, $2, $3, now()::timestamp+'1:00'); $_$;
+
+
+ALTER FUNCTION public.lockrow(text, text, text) OWNER TO aire;
+
+--
+-- Name: lockrow(text, text, text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION lockrow(text, text, text, text) RETURNS integer
+    LANGUAGE sql STRICT
+    AS $_$ SELECT LockRow($1, $2, $3, $4, now()::timestamp+'1:00'); $_$;
+
+
+ALTER FUNCTION public.lockrow(text, text, text, text) OWNER TO aire;
+
+--
+-- Name: lockrow(text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION lockrow(text, text, text, timestamp without time zone) RETURNS integer
+    LANGUAGE sql STRICT
+    AS $_$ SELECT LockRow(current_schema(), $1, $2, $3, $4); $_$;
+
+
+ALTER FUNCTION public.lockrow(text, text, text, timestamp without time zone) OWNER TO aire;
 
 --
 -- Name: lockrow(text, text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aire
@@ -3754,39 +3791,6 @@ $_$;
 
 
 ALTER FUNCTION public.lockrow(text, text, text, text, timestamp without time zone) OWNER TO aire;
-
---
--- Name: lockrow(text, text, text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION lockrow(text, text, text, text) RETURNS integer
-    LANGUAGE sql STRICT
-    AS $_$ SELECT LockRow($1, $2, $3, $4, now()::timestamp+'1:00'); $_$;
-
-
-ALTER FUNCTION public.lockrow(text, text, text, text) OWNER TO aire;
-
---
--- Name: lockrow(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION lockrow(text, text, text) RETURNS integer
-    LANGUAGE sql STRICT
-    AS $_$ SELECT LockRow(current_schema(), $1, $2, $3, now()::timestamp+'1:00'); $_$;
-
-
-ALTER FUNCTION public.lockrow(text, text, text) OWNER TO aire;
-
---
--- Name: lockrow(text, text, text, timestamp without time zone); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION lockrow(text, text, text, timestamp without time zone) RETURNS integer
-    LANGUAGE sql STRICT
-    AS $_$ SELECT LockRow(current_schema(), $1, $2, $3, $4); $_$;
-
-
-ALTER FUNCTION public.lockrow(text, text, text, timestamp without time zone) OWNER TO aire;
 
 --
 -- Name: longtransactionsenabled(); Type: FUNCTION; Schema: public; Owner: aire
@@ -3986,17 +3990,6 @@ CREATE FUNCTION makepointm(double precision, double precision, double precision)
 ALTER FUNCTION public.makepointm(double precision, double precision, double precision) OWNER TO aire;
 
 --
--- Name: makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION makepolygon(geometry, geometry[]) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_makepoly';
-
-
-ALTER FUNCTION public.makepolygon(geometry, geometry[]) OWNER TO aire;
-
---
 -- Name: makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4006,6 +3999,17 @@ CREATE FUNCTION makepolygon(geometry) RETURNS geometry
 
 
 ALTER FUNCTION public.makepolygon(geometry) OWNER TO aire;
+
+--
+-- Name: makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION makepolygon(geometry, geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_makepoly';
+
+
+ALTER FUNCTION public.makepolygon(geometry, geometry[]) OWNER TO aire;
 
 --
 -- Name: max_distance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -4030,22 +4034,6 @@ CREATE FUNCTION mem_size(geometry) RETURNS integer
 ALTER FUNCTION public.mem_size(geometry) OWNER TO aire;
 
 --
--- Name: mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION mlinefromtext(text, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE
-	WHEN geometrytype(GeomFromText($1, $2)) = 'MULTILINESTRING'
-	THEN GeomFromText($1,$2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.mlinefromtext(text, integer) OWNER TO aire;
-
---
 -- Name: mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4061,19 +4049,20 @@ CREATE FUNCTION mlinefromtext(text) RETURNS geometry
 ALTER FUNCTION public.mlinefromtext(text) OWNER TO aire;
 
 --
--- Name: mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION mlinefromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION mlinefromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
-	THEN GeomFromWKB($1, $2)
+	SELECT CASE
+	WHEN geometrytype(GeomFromText($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromText($1,$2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.mlinefromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.mlinefromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4091,19 +4080,19 @@ CREATE FUNCTION mlinefromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.mlinefromwkb(bytea) OWNER TO aire;
 
 --
--- Name: mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION mpointfromtext(text, integer) RETURNS geometry
+CREATE FUNCTION mlinefromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromText($1,$2)) = 'MULTIPOINT'
-	THEN GeomFromText($1,$2)
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1, $2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.mpointfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.mlinefromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -4121,19 +4110,19 @@ CREATE FUNCTION mpointfromtext(text) RETURNS geometry
 ALTER FUNCTION public.mpointfromtext(text) OWNER TO aire;
 
 --
--- Name: mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION mpointfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION mpointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
-	THEN GeomFromWKB($1, $2)
+	SELECT CASE WHEN geometrytype(GeomFromText($1,$2)) = 'MULTIPOINT'
+	THEN GeomFromText($1,$2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.mpointfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.mpointfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4151,19 +4140,19 @@ CREATE FUNCTION mpointfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.mpointfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION mpolyfromtext(text, integer) RETURNS geometry
+CREATE FUNCTION mpointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'MULTIPOLYGON'
-	THEN GeomFromText($1,$2)
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
+	THEN GeomFromWKB($1, $2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.mpolyfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.mpointfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -4181,19 +4170,19 @@ CREATE FUNCTION mpolyfromtext(text) RETURNS geometry
 ALTER FUNCTION public.mpolyfromtext(text) OWNER TO aire;
 
 --
--- Name: mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION mpolyfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION mpolyfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
-	THEN GeomFromWKB($1, $2)
+	SELECT CASE WHEN geometrytype(GeomFromText($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromText($1,$2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.mpolyfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.mpolyfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4211,6 +4200,21 @@ CREATE FUNCTION mpolyfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.mpolyfromwkb(bytea) OWNER TO aire;
 
 --
+-- Name: mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION mpolyfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.mpolyfromwkb(bytea, integer) OWNER TO aire;
+
+--
 -- Name: multi(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4220,21 +4224,6 @@ CREATE FUNCTION multi(geometry) RETURNS geometry
 
 
 ALTER FUNCTION public.multi(geometry) OWNER TO aire;
-
---
--- Name: multilinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION multilinefromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.multilinefromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: multilinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4250,6 +4239,21 @@ CREATE FUNCTION multilinefromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.multilinefromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: multilinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION multilinefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTILINESTRING'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.multilinefromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: multilinestringfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -4274,17 +4278,6 @@ CREATE FUNCTION multilinestringfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.multilinestringfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: multipointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION multipointfromtext(text, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT MPointFromText($1, $2)$_$;
-
-
-ALTER FUNCTION public.multipointfromtext(text, integer) OWNER TO aire;
-
---
 -- Name: multipointfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4296,19 +4289,15 @@ CREATE FUNCTION multipointfromtext(text) RETURNS geometry
 ALTER FUNCTION public.multipointfromtext(text) OWNER TO aire;
 
 --
--- Name: multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: multipointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION multipointfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION multipointfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
+    AS $_$SELECT MPointFromText($1, $2)$_$;
 
 
-ALTER FUNCTION public.multipointfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.multipointfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4326,19 +4315,19 @@ CREATE FUNCTION multipointfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.multipointfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION multipolyfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION multipointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'MULTIPOINT'
 	THEN GeomFromWKB($1, $2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.multipolyfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.multipointfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4356,15 +4345,19 @@ CREATE FUNCTION multipolyfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.multipolyfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION multipolygonfromtext(text, integer) RETURNS geometry
+CREATE FUNCTION multipolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT MPolyFromText($1, $2)$_$;
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
 
 
-ALTER FUNCTION public.multipolygonfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.multipolyfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -4376,6 +4369,17 @@ CREATE FUNCTION multipolygonfromtext(text) RETURNS geometry
 
 
 ALTER FUNCTION public.multipolygonfromtext(text) OWNER TO aire;
+
+--
+-- Name: multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION multipolygonfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPolyFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.multipolygonfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: ndims(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -4670,21 +4674,6 @@ CREATE FUNCTION pointfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.pointfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION pointfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'POINT'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.pointfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4698,6 +4687,21 @@ CREATE FUNCTION pointfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.pointfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION pointfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'POINT'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.pointfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -4752,21 +4756,6 @@ CREATE FUNCTION polyfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.polyfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION polyfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'POLYGON'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.polyfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -4782,15 +4771,19 @@ CREATE FUNCTION polyfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.polyfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION polygonfromtext(text, integer) RETURNS geometry
+CREATE FUNCTION polyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT PolyFromText($1, $2)$_$;
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1, $2)) = 'POLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
 
 
-ALTER FUNCTION public.polygonfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.polyfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -4804,19 +4797,15 @@ CREATE FUNCTION polygonfromtext(text) RETURNS geometry
 ALTER FUNCTION public.polygonfromtext(text) OWNER TO aire;
 
 --
--- Name: polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION polygonfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION polygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'POLYGON'
-	THEN GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
+    AS $_$SELECT PolyFromText($1, $2)$_$;
 
 
-ALTER FUNCTION public.polygonfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.polygonfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -4832,6 +4821,21 @@ CREATE FUNCTION polygonfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.polygonfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION polygonfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(GeomFromWKB($1,$2)) = 'POLYGON'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.polygonfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: polygonize_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aire
@@ -5620,17 +5624,6 @@ CREATE FUNCTION rotatez(geometry, double precision) RETURNS geometry
 ALTER FUNCTION public.rotatez(geometry, double precision) OWNER TO aire;
 
 --
--- Name: scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION scale(geometry, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT affine($1,  $2, 0, 0,  0, $3, 0,  0, 0, $4,  0, 0, 0)$_$;
-
-
-ALTER FUNCTION public.scale(geometry, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -5640,6 +5633,17 @@ CREATE FUNCTION scale(geometry, double precision, double precision) RETURNS geom
 
 
 ALTER FUNCTION public.scale(geometry, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION scale(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT affine($1,  $2, 0, 0,  0, $3, 0,  0, 0, $4,  0, 0, 0)$_$;
+
+
+ALTER FUNCTION public.scale(geometry, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: se_envelopesintersect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -5798,15 +5802,15 @@ CREATE FUNCTION simplify(geometry, double precision) RETURNS geometry
 ALTER FUNCTION public.simplify(geometry, double precision) OWNER TO aire;
 
 --
--- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_snaptogrid';
+CREATE FUNCTION snaptogrid(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT SnapToGrid($1, 0, 0, $2, $2)$_$;
 
 
-ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO aire;
+ALTER FUNCTION public.snaptogrid(geometry, double precision) OWNER TO aire;
 
 --
 -- Name: snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -5820,15 +5824,15 @@ CREATE FUNCTION snaptogrid(geometry, double precision, double precision) RETURNS
 ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision) OWNER TO aire;
 
 --
--- Name: snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION snaptogrid(geometry, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT SnapToGrid($1, 0, 0, $2, $2)$_$;
+CREATE FUNCTION snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_snaptogrid';
 
 
-ALTER FUNCTION public.snaptogrid(geometry, double precision) OWNER TO aire;
+ALTER FUNCTION public.snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -5897,17 +5901,6 @@ CREATE FUNCTION st_addpoint(geometry, geometry, integer) RETURNS geometry
 ALTER FUNCTION public.st_addpoint(geometry, geometry, integer) OWNER TO aire;
 
 --
--- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_affine';
-
-
-ALTER FUNCTION public.st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -5919,6 +5912,17 @@ CREATE FUNCTION st_affine(geometry, double precision, double precision, double p
 ALTER FUNCTION public.st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
 
 --
+-- Name: st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_affine';
+
+
+ALTER FUNCTION public.st_affine(geometry, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision, double precision) OWNER TO aire;
+
+--
 -- Name: st_area(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -5928,17 +5932,6 @@ CREATE FUNCTION st_area(geometry) RETURNS double precision
 
 
 ALTER FUNCTION public.st_area(geometry) OWNER TO aire;
-
---
--- Name: st_area(geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_area(geography, boolean) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT COST 100
-    AS '$libdir/postgis-1.5', 'geography_area';
-
-
-ALTER FUNCTION public.st_area(geography, boolean) OWNER TO aire;
 
 --
 -- Name: st_area(geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -5963,6 +5956,17 @@ CREATE FUNCTION st_area(text) RETURNS double precision
 ALTER FUNCTION public.st_area(text) OWNER TO aire;
 
 --
+-- Name: st_area(geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_area(geography, boolean) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-1.5', 'geography_area';
+
+
+ALTER FUNCTION public.st_area(geography, boolean) OWNER TO aire;
+
+--
 -- Name: st_area2d(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -5985,17 +5989,6 @@ CREATE FUNCTION st_asbinary(geometry) RETURNS bytea
 ALTER FUNCTION public.st_asbinary(geometry) OWNER TO aire;
 
 --
--- Name: st_asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asbinary(geometry, text) RETURNS bytea
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_asBinary';
-
-
-ALTER FUNCTION public.st_asbinary(geometry, text) OWNER TO aire;
-
---
 -- Name: st_asbinary(geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6016,6 +6009,17 @@ CREATE FUNCTION st_asbinary(text) RETURNS bytea
 
 
 ALTER FUNCTION public.st_asbinary(text) OWNER TO aire;
+
+--
+-- Name: st_asbinary(geometry, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asbinary(geometry, text) RETURNS bytea
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_asBinary';
+
+
+ALTER FUNCTION public.st_asbinary(geometry, text) OWNER TO aire;
 
 --
 -- Name: st_asewkb(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -6051,17 +6055,6 @@ CREATE FUNCTION st_asewkt(geometry) RETURNS text
 ALTER FUNCTION public.st_asewkt(geometry) OWNER TO aire;
 
 --
--- Name: st_asgeojson(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_asgeojson(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6071,61 +6064,6 @@ CREATE FUNCTION st_asgeojson(geometry) RETURNS text
 
 
 ALTER FUNCTION public.st_asgeojson(geometry) OWNER TO aire;
-
---
--- Name: st_asgeojson(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(integer, geometry) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson($1, $2, 15, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(integer, geometry) OWNER TO aire;
-
---
--- Name: st_asgeojson(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(integer, geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson($1, $2, $3, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(integer, geometry, integer) OWNER TO aire;
-
---
--- Name: st_asgeojson(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(geometry, integer, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, $3)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(geometry, integer, integer) OWNER TO aire;
-
---
--- Name: st_asgeojson(integer, geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(integer, geometry, integer, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson($1, $2, $3, $4)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(integer, geometry, integer, integer) OWNER TO aire;
-
---
--- Name: st_asgeojson(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgeojson(geography, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgeojson(geography, integer) OWNER TO aire;
 
 --
 -- Name: st_asgeojson(geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -6150,6 +6088,39 @@ CREATE FUNCTION st_asgeojson(text) RETURNS text
 ALTER FUNCTION public.st_asgeojson(text) OWNER TO aire;
 
 --
+-- Name: st_asgeojson(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_asgeojson(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(integer, geometry) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson($1, $2, 15, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(integer, geometry) OWNER TO aire;
+
+--
+-- Name: st_asgeojson(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(geography, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(geography, integer) OWNER TO aire;
+
+--
 -- Name: st_asgeojson(integer, geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6159,6 +6130,28 @@ CREATE FUNCTION st_asgeojson(integer, geography) RETURNS text
 
 
 ALTER FUNCTION public.st_asgeojson(integer, geography) OWNER TO aire;
+
+--
+-- Name: st_asgeojson(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(integer, geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson($1, $2, $3, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(integer, geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_asgeojson(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(geometry, integer, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson(1, $1, $2, $3)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(geometry, integer, integer) OWNER TO aire;
 
 --
 -- Name: st_asgeojson(integer, geography, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -6183,6 +6176,17 @@ CREATE FUNCTION st_asgeojson(geography, integer, integer) RETURNS text
 ALTER FUNCTION public.st_asgeojson(geography, integer, integer) OWNER TO aire;
 
 --
+-- Name: st_asgeojson(integer, geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgeojson(integer, geometry, integer, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGeoJson($1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.st_asgeojson(integer, geometry, integer, integer) OWNER TO aire;
+
+--
 -- Name: st_asgeojson(integer, geography, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6194,17 +6198,6 @@ CREATE FUNCTION st_asgeojson(integer, geography, integer, integer) RETURNS text
 ALTER FUNCTION public.st_asgeojson(integer, geography, integer, integer) OWNER TO aire;
 
 --
--- Name: st_asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgml(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_asgml(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6214,61 +6207,6 @@ CREATE FUNCTION st_asgml(geometry) RETURNS text
 
 
 ALTER FUNCTION public.st_asgml(geometry) OWNER TO aire;
-
---
--- Name: st_asgml(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(integer, geometry) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML($1, $2, 15, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgml(integer, geometry) OWNER TO aire;
-
---
--- Name: st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(integer, geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML($1, $2, $3, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgml(integer, geometry, integer) OWNER TO aire;
-
---
--- Name: st_asgml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(geometry, integer, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML(2, $1, $2, $3)$_$;
-
-
-ALTER FUNCTION public.st_asgml(geometry, integer, integer) OWNER TO aire;
-
---
--- Name: st_asgml(integer, geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(integer, geometry, integer, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML($1, $2, $3, $4)$_$;
-
-
-ALTER FUNCTION public.st_asgml(integer, geometry, integer, integer) OWNER TO aire;
-
---
--- Name: st_asgml(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_asgml(geography, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
-
-
-ALTER FUNCTION public.st_asgml(geography, integer) OWNER TO aire;
 
 --
 -- Name: st_asgml(geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -6293,6 +6231,39 @@ CREATE FUNCTION st_asgml(text) RETURNS text
 ALTER FUNCTION public.st_asgml(text) OWNER TO aire;
 
 --
+-- Name: st_asgml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgml(geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_asgml(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(integer, geometry) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML($1, $2, 15, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgml(integer, geometry) OWNER TO aire;
+
+--
+-- Name: st_asgml(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(geography, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, $2, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgml(geography, integer) OWNER TO aire;
+
+--
 -- Name: st_asgml(integer, geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6302,6 +6273,28 @@ CREATE FUNCTION st_asgml(integer, geography) RETURNS text
 
 
 ALTER FUNCTION public.st_asgml(integer, geography) OWNER TO aire;
+
+--
+-- Name: st_asgml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(integer, geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML($1, $2, $3, 0)$_$;
+
+
+ALTER FUNCTION public.st_asgml(integer, geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_asgml(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(geometry, integer, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML(2, $1, $2, $3)$_$;
+
+
+ALTER FUNCTION public.st_asgml(geometry, integer, integer) OWNER TO aire;
 
 --
 -- Name: st_asgml(integer, geography, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -6324,6 +6317,17 @@ CREATE FUNCTION st_asgml(geography, integer, integer) RETURNS text
 
 
 ALTER FUNCTION public.st_asgml(geography, integer, integer) OWNER TO aire;
+
+--
+-- Name: st_asgml(integer, geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_asgml(integer, geometry, integer, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsGML($1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.st_asgml(integer, geometry, integer, integer) OWNER TO aire;
 
 --
 -- Name: st_asgml(integer, geography, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -6359,17 +6363,6 @@ CREATE FUNCTION st_ashexewkb(geometry, text) RETURNS text
 ALTER FUNCTION public.st_ashexewkb(geometry, text) OWNER TO aire;
 
 --
--- Name: st_askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_askml(geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsKML(2, ST_Transform($1,4326), $2)$_$;
-
-
-ALTER FUNCTION public.st_askml(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_askml(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6379,39 +6372,6 @@ CREATE FUNCTION st_askml(geometry) RETURNS text
 
 
 ALTER FUNCTION public.st_askml(geometry) OWNER TO aire;
-
---
--- Name: st_askml(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_askml(integer, geometry) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsKML($1, ST_Transform($2,4326), 15)$_$;
-
-
-ALTER FUNCTION public.st_askml(integer, geometry) OWNER TO aire;
-
---
--- Name: st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_askml(integer, geometry, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsKML($1, ST_Transform($2,4326), $3)$_$;
-
-
-ALTER FUNCTION public.st_askml(integer, geometry, integer) OWNER TO aire;
-
---
--- Name: st_askml(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_askml(geography, integer) RETURNS text
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_AsKML(2, $1, $2)$_$;
-
-
-ALTER FUNCTION public.st_askml(geography, integer) OWNER TO aire;
 
 --
 -- Name: st_askml(geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -6436,6 +6396,39 @@ CREATE FUNCTION st_askml(text) RETURNS text
 ALTER FUNCTION public.st_askml(text) OWNER TO aire;
 
 --
+-- Name: st_askml(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_askml(geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML(2, ST_Transform($1,4326), $2)$_$;
+
+
+ALTER FUNCTION public.st_askml(geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_askml(integer, geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_askml(integer, geometry) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML($1, ST_Transform($2,4326), 15)$_$;
+
+
+ALTER FUNCTION public.st_askml(integer, geometry) OWNER TO aire;
+
+--
+-- Name: st_askml(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_askml(geography, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML(2, $1, $2)$_$;
+
+
+ALTER FUNCTION public.st_askml(geography, integer) OWNER TO aire;
+
+--
 -- Name: st_askml(integer, geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6445,6 +6438,17 @@ CREATE FUNCTION st_askml(integer, geography) RETURNS text
 
 
 ALTER FUNCTION public.st_askml(integer, geography) OWNER TO aire;
+
+--
+-- Name: st_askml(integer, geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_askml(integer, geometry, integer) RETURNS text
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_AsKML($1, ST_Transform($2,4326), $3)$_$;
+
+
+ALTER FUNCTION public.st_askml(integer, geometry, integer) OWNER TO aire;
 
 --
 -- Name: st_askml(integer, geography, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -6458,28 +6462,6 @@ CREATE FUNCTION st_askml(integer, geography, integer) RETURNS text
 ALTER FUNCTION public.st_askml(integer, geography, integer) OWNER TO aire;
 
 --
--- Name: st_assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_assvg(geometry, integer, integer) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'assvg_geometry';
-
-
-ALTER FUNCTION public.st_assvg(geometry, integer, integer) OWNER TO aire;
-
---
--- Name: st_assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_assvg(geometry, integer) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'assvg_geometry';
-
-
-ALTER FUNCTION public.st_assvg(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_assvg(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6489,28 +6471,6 @@ CREATE FUNCTION st_assvg(geometry) RETURNS text
 
 
 ALTER FUNCTION public.st_assvg(geometry) OWNER TO aire;
-
---
--- Name: st_assvg(geography, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_assvg(geography, integer, integer) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'geography_as_svg';
-
-
-ALTER FUNCTION public.st_assvg(geography, integer, integer) OWNER TO aire;
-
---
--- Name: st_assvg(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_assvg(geography, integer) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'geography_as_svg';
-
-
-ALTER FUNCTION public.st_assvg(geography, integer) OWNER TO aire;
 
 --
 -- Name: st_assvg(geography); Type: FUNCTION; Schema: public; Owner: aire
@@ -6533,6 +6493,50 @@ CREATE FUNCTION st_assvg(text) RETURNS text
 
 
 ALTER FUNCTION public.st_assvg(text) OWNER TO aire;
+
+--
+-- Name: st_assvg(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_assvg(geometry, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'assvg_geometry';
+
+
+ALTER FUNCTION public.st_assvg(geometry, integer) OWNER TO aire;
+
+--
+-- Name: st_assvg(geography, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_assvg(geography, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'geography_as_svg';
+
+
+ALTER FUNCTION public.st_assvg(geography, integer) OWNER TO aire;
+
+--
+-- Name: st_assvg(geometry, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_assvg(geometry, integer, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'assvg_geometry';
+
+
+ALTER FUNCTION public.st_assvg(geometry, integer, integer) OWNER TO aire;
+
+--
+-- Name: st_assvg(geography, integer, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_assvg(geography, integer, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'geography_as_svg';
+
+
+ALTER FUNCTION public.st_assvg(geography, integer, integer) OWNER TO aire;
 
 --
 -- Name: st_astext(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -6796,6 +6800,28 @@ CREATE FUNCTION st_buffer(geometry, double precision) RETURNS geometry
 ALTER FUNCTION public.st_buffer(geometry, double precision) OWNER TO aire;
 
 --
+-- Name: st_buffer(geography, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_buffer(geography, double precision) RETURNS geography
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT geography(ST_Transform(ST_Buffer(ST_Transform(geometry($1), _ST_BestSRID($1)), $2), 4326))$_$;
+
+
+ALTER FUNCTION public.st_buffer(geography, double precision) OWNER TO aire;
+
+--
+-- Name: st_buffer(text, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_buffer(text, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$ SELECT ST_Buffer($1::geometry, $2);  $_$;
+
+
+ALTER FUNCTION public.st_buffer(text, double precision) OWNER TO aire;
+
+--
 -- Name: st_buffer(geometry, double precision, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6822,28 +6848,6 @@ CREATE FUNCTION st_buffer(geometry, double precision, text) RETURNS geometry
 
 
 ALTER FUNCTION public.st_buffer(geometry, double precision, text) OWNER TO aire;
-
---
--- Name: st_buffer(geography, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_buffer(geography, double precision) RETURNS geography
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT geography(ST_Transform(ST_Buffer(ST_Transform(geometry($1), _ST_BestSRID($1)), $2), 4326))$_$;
-
-
-ALTER FUNCTION public.st_buffer(geography, double precision) OWNER TO aire;
-
---
--- Name: st_buffer(text, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_buffer(text, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$ SELECT ST_Buffer($1::geometry, $2);  $_$;
-
-
-ALTER FUNCTION public.st_buffer(text, double precision) OWNER TO aire;
 
 --
 -- Name: st_buildarea(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -6912,17 +6916,6 @@ CREATE FUNCTION st_closestpoint(geometry, geometry) RETURNS geometry
 ALTER FUNCTION public.st_closestpoint(geometry, geometry) OWNER TO aire;
 
 --
--- Name: st_collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_collect(geometry, geometry) RETURNS geometry
-    LANGUAGE c IMMUTABLE
-    AS '$libdir/postgis-1.5', 'LWGEOM_collect';
-
-
-ALTER FUNCTION public.st_collect(geometry, geometry) OWNER TO aire;
-
---
 -- Name: st_collect(geometry[]); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -6932,6 +6925,17 @@ CREATE FUNCTION st_collect(geometry[]) RETURNS geometry
 
 
 ALTER FUNCTION public.st_collect(geometry[]) OWNER TO aire;
+
+--
+-- Name: st_collect(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_collect(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE
+    AS '$libdir/postgis-1.5', 'LWGEOM_collect';
+
+
+ALTER FUNCTION public.st_collect(geometry, geometry) OWNER TO aire;
 
 --
 -- Name: st_collectionextract(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -7110,17 +7114,6 @@ CREATE FUNCTION st_crosses(geometry, geometry) RETURNS boolean
 ALTER FUNCTION public.st_crosses(geometry, geometry) OWNER TO aire;
 
 --
--- Name: st_curvetoline(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_curvetoline(geometry, integer) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_curve_segmentize';
-
-
-ALTER FUNCTION public.st_curvetoline(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_curvetoline(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7130,6 +7123,17 @@ CREATE FUNCTION st_curvetoline(geometry) RETURNS geometry
 
 
 ALTER FUNCTION public.st_curvetoline(geometry) OWNER TO aire;
+
+--
+-- Name: st_curvetoline(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_curvetoline(geometry, integer) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_curve_segmentize';
+
+
+ALTER FUNCTION public.st_curvetoline(geometry, integer) OWNER TO aire;
 
 --
 -- Name: st_datatype(chip); Type: FUNCTION; Schema: public; Owner: aire
@@ -7198,17 +7202,6 @@ CREATE FUNCTION st_distance(geometry, geometry) RETURNS double precision
 ALTER FUNCTION public.st_distance(geometry, geometry) OWNER TO aire;
 
 --
--- Name: st_distance(geography, geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_distance(geography, geography, boolean) RETURNS double precision
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT _ST_Distance($1, $2, 0.0, $3)$_$;
-
-
-ALTER FUNCTION public.st_distance(geography, geography, boolean) OWNER TO aire;
-
---
 -- Name: st_distance(geography, geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7229,6 +7222,17 @@ CREATE FUNCTION st_distance(text, text) RETURNS double precision
 
 
 ALTER FUNCTION public.st_distance(text, text) OWNER TO aire;
+
+--
+-- Name: st_distance(geography, geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_distance(geography, geography, boolean) RETURNS double precision
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT _ST_Distance($1, $2, 0.0, $3)$_$;
+
+
+ALTER FUNCTION public.st_distance(geography, geography, boolean) OWNER TO aire;
 
 --
 -- Name: st_distance_sphere(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -7299,17 +7303,6 @@ CREATE FUNCTION st_dwithin(geometry, geometry, double precision) RETURNS boolean
 ALTER FUNCTION public.st_dwithin(geometry, geometry, double precision) OWNER TO aire;
 
 --
--- Name: st_dwithin(geography, geography, double precision, boolean); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_dwithin(geography, geography, double precision, boolean) RETURNS boolean
-    LANGUAGE sql IMMUTABLE
-    AS $_$SELECT $1 && _ST_Expand($2,$3) AND $2 && _ST_Expand($1,$3) AND _ST_DWithin($1, $2, $3, $4)$_$;
-
-
-ALTER FUNCTION public.st_dwithin(geography, geography, double precision, boolean) OWNER TO aire;
-
---
 -- Name: st_dwithin(geography, geography, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7330,6 +7323,17 @@ CREATE FUNCTION st_dwithin(text, text, double precision) RETURNS boolean
 
 
 ALTER FUNCTION public.st_dwithin(text, text, double precision) OWNER TO aire;
+
+--
+-- Name: st_dwithin(geography, geography, double precision, boolean); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_dwithin(geography, geography, double precision, boolean) RETURNS boolean
+    LANGUAGE sql IMMUTABLE
+    AS $_$SELECT $1 && _ST_Expand($2,$3) AND $2 && _ST_Expand($1,$3) AND _ST_DWithin($1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.st_dwithin(geography, geography, double precision, boolean) OWNER TO aire;
 
 --
 -- Name: st_endpoint(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -7365,17 +7369,6 @@ CREATE FUNCTION st_equals(geometry, geometry) RETURNS boolean
 ALTER FUNCTION public.st_equals(geometry, geometry) OWNER TO aire;
 
 --
--- Name: st_estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_estimated_extent(text, text, text) RETURNS box2d
-    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
-    AS '$libdir/postgis-1.5', 'LWGEOM_estimated_extent';
-
-
-ALTER FUNCTION public.st_estimated_extent(text, text, text) OWNER TO aire;
-
---
 -- Name: st_estimated_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7385,6 +7378,17 @@ CREATE FUNCTION st_estimated_extent(text, text) RETURNS box2d
 
 
 ALTER FUNCTION public.st_estimated_extent(text, text) OWNER TO aire;
+
+--
+-- Name: st_estimated_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_estimated_extent(text, text, text) RETURNS box2d
+    LANGUAGE c IMMUTABLE STRICT SECURITY DEFINER
+    AS '$libdir/postgis-1.5', 'LWGEOM_estimated_extent';
+
+
+ALTER FUNCTION public.st_estimated_extent(text, text, text) OWNER TO aire;
 
 --
 -- Name: st_expand(box3d, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -7442,6 +7446,28 @@ CREATE FUNCTION st_factor(chip) RETURNS real
 ALTER FUNCTION public.st_factor(chip) OWNER TO aire;
 
 --
+-- Name: st_find_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_find_extent(text, text) RETURNS box2d
+    LANGUAGE plpgsql IMMUTABLE STRICT
+    AS $_$
+DECLARE
+	tablename alias for $1;
+	columnname alias for $2;
+	myrec RECORD;
+
+BEGIN
+	FOR myrec IN EXECUTE 'SELECT extent("' || columnname || '") FROM "' || tablename || '"' LOOP
+		return myrec.extent;
+	END LOOP;
+END;
+$_$;
+
+
+ALTER FUNCTION public.st_find_extent(text, text) OWNER TO aire;
+
+--
 -- Name: st_find_extent(text, text, text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7463,28 +7489,6 @@ $_$;
 
 
 ALTER FUNCTION public.st_find_extent(text, text, text) OWNER TO aire;
-
---
--- Name: st_find_extent(text, text); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_find_extent(text, text) RETURNS box2d
-    LANGUAGE plpgsql IMMUTABLE STRICT
-    AS $_$
-DECLARE
-	tablename alias for $1;
-	columnname alias for $2;
-	myrec RECORD;
-
-BEGIN
-	FOR myrec IN EXECUTE 'SELECT extent("' || columnname || '") FROM "' || tablename || '"' LOOP
-		return myrec.extent;
-	END LOOP;
-END;
-$_$;
-
-
-ALTER FUNCTION public.st_find_extent(text, text) OWNER TO aire;
 
 --
 -- Name: st_force_2d(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -7597,17 +7601,6 @@ CREATE FUNCTION st_geographyfromtext(text) RETURNS geography
 ALTER FUNCTION public.st_geographyfromtext(text) OWNER TO aire;
 
 --
--- Name: st_geohash(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_geohash(geometry, integer) RETURNS text
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'ST_GeoHash';
-
-
-ALTER FUNCTION public.st_geohash(geometry, integer) OWNER TO aire;
-
---
 -- Name: st_geohash(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -7619,20 +7612,15 @@ CREATE FUNCTION st_geohash(geometry) RETURNS text
 ALTER FUNCTION public.st_geohash(geometry) OWNER TO aire;
 
 --
--- Name: st_geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_geohash(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_geomcollfromtext(text, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE
-	WHEN geometrytype(ST_GeomFromText($1, $2)) = 'GEOMETRYCOLLECTION'
-	THEN ST_GeomFromText($1,$2)
-	ELSE NULL END
-	$_$;
+CREATE FUNCTION st_geohash(geometry, integer) RETURNS text
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'ST_GeoHash';
 
 
-ALTER FUNCTION public.st_geomcollfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.st_geohash(geometry, integer) OWNER TO aire;
 
 --
 -- Name: st_geomcollfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -7651,20 +7639,20 @@ CREATE FUNCTION st_geomcollfromtext(text) RETURNS geometry
 ALTER FUNCTION public.st_geomcollfromtext(text) OWNER TO aire;
 
 --
--- Name: st_geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_geomcollfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_geomcollfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION st_geomcollfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
 	SELECT CASE
-	WHEN geometrytype(GeomFromWKB($1, $2)) = 'GEOMETRYCOLLECTION'
-	THEN GeomFromWKB($1, $2)
+	WHEN geometrytype(ST_GeomFromText($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN ST_GeomFromText($1,$2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_geomcollfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.st_geomcollfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: st_geomcollfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -7681,6 +7669,22 @@ CREATE FUNCTION st_geomcollfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.st_geomcollfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: st_geomcollfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_geomcollfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE
+	WHEN geometrytype(GeomFromWKB($1, $2)) = 'GEOMETRYCOLLECTION'
+	THEN GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_geomcollfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_geometry(box2d); Type: FUNCTION; Schema: public; Owner: aire
@@ -8343,17 +8347,6 @@ CREATE FUNCTION st_length(geometry) RETURNS double precision
 ALTER FUNCTION public.st_length(geometry) OWNER TO aire;
 
 --
--- Name: st_length(geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_length(geography, boolean) RETURNS double precision
-    LANGUAGE c IMMUTABLE STRICT COST 100
-    AS '$libdir/postgis-1.5', 'geography_length';
-
-
-ALTER FUNCTION public.st_length(geography, boolean) OWNER TO aire;
-
---
 -- Name: st_length(geography); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -8374,6 +8367,17 @@ CREATE FUNCTION st_length(text) RETURNS double precision
 
 
 ALTER FUNCTION public.st_length(text) OWNER TO aire;
+
+--
+-- Name: st_length(geography, boolean); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_length(geography, boolean) RETURNS double precision
+    LANGUAGE c IMMUTABLE STRICT COST 100
+    AS '$libdir/postgis-1.5', 'geography_length';
+
+
+ALTER FUNCTION public.st_length(geography, boolean) OWNER TO aire;
 
 --
 -- Name: st_length2d(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -8516,21 +8520,6 @@ CREATE FUNCTION st_linefromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_linefromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_linefromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'LINESTRING'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_linefromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: st_linefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -8546,6 +8535,21 @@ CREATE FUNCTION st_linefromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.st_linefromwkb(bytea) OWNER TO aire;
 
 --
+-- Name: st_linefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_linefromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_linefromwkb(bytea, integer) OWNER TO aire;
+
+--
 -- Name: st_linemerge(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -8555,21 +8559,6 @@ CREATE FUNCTION st_linemerge(geometry) RETURNS geometry
 
 
 ALTER FUNCTION public.st_linemerge(geometry) OWNER TO aire;
-
---
--- Name: st_linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_linestringfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'LINESTRING'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_linestringfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_linestringfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -8585,6 +8574,21 @@ CREATE FUNCTION st_linestringfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.st_linestringfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: st_linestringfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_linestringfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'LINESTRING'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_linestringfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_linetocurve(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -8763,17 +8767,6 @@ CREATE FUNCTION st_makepointm(double precision, double precision, double precisi
 ALTER FUNCTION public.st_makepointm(double precision, double precision, double precision) OWNER TO aire;
 
 --
--- Name: st_makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_makepolygon(geometry, geometry[]) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_makepoly';
-
-
-ALTER FUNCTION public.st_makepolygon(geometry, geometry[]) OWNER TO aire;
-
---
 -- Name: st_makepolygon(geometry); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -8783,6 +8776,17 @@ CREATE FUNCTION st_makepolygon(geometry) RETURNS geometry
 
 
 ALTER FUNCTION public.st_makepolygon(geometry) OWNER TO aire;
+
+--
+-- Name: st_makepolygon(geometry, geometry[]); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_makepolygon(geometry, geometry[]) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_makepoly';
+
+
+ALTER FUNCTION public.st_makepolygon(geometry, geometry[]) OWNER TO aire;
 
 --
 -- Name: st_maxdistance(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -8805,6 +8809,17 @@ CREATE FUNCTION st_mem_size(geometry) RETURNS integer
 
 
 ALTER FUNCTION public.st_mem_size(geometry) OWNER TO aire;
+
+--
+-- Name: st_minimumboundingcircle(geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_minimumboundingcircle(geometry) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_MinimumBoundingCircle($1, 48)$_$;
+
+
+ALTER FUNCTION public.st_minimumboundingcircle(geometry) OWNER TO aire;
 
 --
 -- Name: st_minimumboundingcircle(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -8915,15 +8930,19 @@ $$;
 ALTER FUNCTION public.st_minimumboundingcircle(inputgeom geometry, segs_per_quarter integer) OWNER TO aire;
 
 --
--- Name: st_minimumboundingcircle(geometry); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_minimumboundingcircle(geometry) RETURNS geometry
+CREATE FUNCTION st_mlinefromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT ST_MinimumBoundingCircle($1, 48)$_$;
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTILINESTRING'
+	THEN ST_GeomFromText($1)
+	ELSE NULL END
+	$_$;
 
 
-ALTER FUNCTION public.st_minimumboundingcircle(geometry) OWNER TO aire;
+ALTER FUNCTION public.st_mlinefromtext(text) OWNER TO aire;
 
 --
 -- Name: st_mlinefromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -8942,19 +8961,19 @@ CREATE FUNCTION st_mlinefromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_mlinefromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_mlinefromtext(text); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_mlinefromtext(text) RETURNS geometry
+CREATE FUNCTION st_mlinefromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTILINESTRING'
-	THEN ST_GeomFromText($1)
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTILINESTRING'
+	THEN ST_GeomFromWKB($1)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_mlinefromtext(text) OWNER TO aire;
+ALTER FUNCTION public.st_mlinefromwkb(bytea) OWNER TO aire;
 
 --
 -- Name: st_mlinefromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -8972,19 +8991,19 @@ CREATE FUNCTION st_mlinefromwkb(bytea, integer) RETURNS geometry
 ALTER FUNCTION public.st_mlinefromwkb(bytea, integer) OWNER TO aire;
 
 --
--- Name: st_mlinefromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_mlinefromwkb(bytea) RETURNS geometry
+CREATE FUNCTION st_mpointfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTILINESTRING'
-	THEN ST_GeomFromWKB($1)
+	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTIPOINT'
+	THEN ST_GeomFromText($1)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_mlinefromwkb(bytea) OWNER TO aire;
+ALTER FUNCTION public.st_mpointfromtext(text) OWNER TO aire;
 
 --
 -- Name: st_mpointfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -9002,19 +9021,19 @@ CREATE FUNCTION st_mpointfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_mpointfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_mpointfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_mpointfromtext(text) RETURNS geometry
+CREATE FUNCTION st_mpointfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTIPOINT'
-	THEN ST_GeomFromText($1)
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTIPOINT'
+	THEN ST_GeomFromWKB($1)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_mpointfromtext(text) OWNER TO aire;
+ALTER FUNCTION public.st_mpointfromwkb(bytea) OWNER TO aire;
 
 --
 -- Name: st_mpointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -9032,19 +9051,19 @@ CREATE FUNCTION st_mpointfromwkb(bytea, integer) RETURNS geometry
 ALTER FUNCTION public.st_mpointfromwkb(bytea, integer) OWNER TO aire;
 
 --
--- Name: st_mpointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_mpointfromwkb(bytea) RETURNS geometry
+CREATE FUNCTION st_mpolyfromtext(text) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTIPOINT'
-	THEN ST_GeomFromWKB($1)
+	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTIPOLYGON'
+	THEN ST_GeomFromText($1)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_mpointfromwkb(bytea) OWNER TO aire;
+ALTER FUNCTION public.st_mpolyfromtext(text) OWNER TO aire;
 
 --
 -- Name: st_mpolyfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -9062,19 +9081,19 @@ CREATE FUNCTION st_mpolyfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_mpolyfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_mpolyfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_mpolyfromtext(text) RETURNS geometry
+CREATE FUNCTION st_mpolyfromwkb(bytea) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromText($1)) = 'MULTIPOLYGON'
-	THEN ST_GeomFromText($1)
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTIPOLYGON'
+	THEN ST_GeomFromWKB($1)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_mpolyfromtext(text) OWNER TO aire;
+ALTER FUNCTION public.st_mpolyfromwkb(bytea) OWNER TO aire;
 
 --
 -- Name: st_mpolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -9090,21 +9109,6 @@ CREATE FUNCTION st_mpolyfromwkb(bytea, integer) RETURNS geometry
 
 
 ALTER FUNCTION public.st_mpolyfromwkb(bytea, integer) OWNER TO aire;
-
---
--- Name: st_mpolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_mpolyfromwkb(bytea) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1)) = 'MULTIPOLYGON'
-	THEN ST_GeomFromWKB($1)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_mpolyfromwkb(bytea) OWNER TO aire;
 
 --
 -- Name: st_multi(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -9166,21 +9170,6 @@ CREATE FUNCTION st_multipointfromtext(text) RETURNS geometry
 ALTER FUNCTION public.st_multipointfromtext(text) OWNER TO aire;
 
 --
--- Name: st_multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_multipointfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1,$2)) = 'MULTIPOINT'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_multipointfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: st_multipointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9196,19 +9185,19 @@ CREATE FUNCTION st_multipointfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.st_multipointfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: st_multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_multipointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_multipolyfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION st_multipointfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
     AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1,$2)) = 'MULTIPOINT'
 	THEN ST_GeomFromWKB($1, $2)
 	ELSE NULL END
 	$_$;
 
 
-ALTER FUNCTION public.st_multipolyfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.st_multipointfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_multipolyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -9226,15 +9215,19 @@ CREATE FUNCTION st_multipolyfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.st_multipolyfromwkb(bytea) OWNER TO aire;
 
 --
--- Name: st_multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_multipolyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_multipolygonfromtext(text, integer) RETURNS geometry
+CREATE FUNCTION st_multipolyfromwkb(bytea, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT MPolyFromText($1, $2)$_$;
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'MULTIPOLYGON'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
 
 
-ALTER FUNCTION public.st_multipolygonfromtext(text, integer) OWNER TO aire;
+ALTER FUNCTION public.st_multipolyfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_multipolygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
@@ -9246,6 +9239,17 @@ CREATE FUNCTION st_multipolygonfromtext(text) RETURNS geometry
 
 
 ALTER FUNCTION public.st_multipolygonfromtext(text) OWNER TO aire;
+
+--
+-- Name: st_multipolygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_multipolygonfromtext(text, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT MPolyFromText($1, $2)$_$;
+
+
+ALTER FUNCTION public.st_multipolygonfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: st_ndims(geometry); Type: FUNCTION; Schema: public; Owner: aire
@@ -9434,21 +9438,6 @@ CREATE FUNCTION st_pointfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_pointfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_pointfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'POINT'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_pointfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: st_pointfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9462,6 +9451,21 @@ CREATE FUNCTION st_pointfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.st_pointfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: st_pointfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_pointfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'POINT'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_pointfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_pointn(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -9516,21 +9520,6 @@ CREATE FUNCTION st_polyfromtext(text, integer) RETURNS geometry
 ALTER FUNCTION public.st_polyfromtext(text, integer) OWNER TO aire;
 
 --
--- Name: st_polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_polyfromwkb(bytea, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'POLYGON'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
-
-
-ALTER FUNCTION public.st_polyfromwkb(bytea, integer) OWNER TO aire;
-
---
 -- Name: st_polyfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9546,6 +9535,21 @@ CREATE FUNCTION st_polyfromwkb(bytea) RETURNS geometry
 ALTER FUNCTION public.st_polyfromwkb(bytea) OWNER TO aire;
 
 --
+-- Name: st_polyfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_polyfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1, $2)) = 'POLYGON'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_polyfromwkb(bytea, integer) OWNER TO aire;
+
+--
 -- Name: st_polygon(geometry, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9559,17 +9563,6 @@ CREATE FUNCTION st_polygon(geometry, integer) RETURNS geometry
 ALTER FUNCTION public.st_polygon(geometry, integer) OWNER TO aire;
 
 --
--- Name: st_polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_polygonfromtext(text, integer) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT PolyFromText($1, $2)$_$;
-
-
-ALTER FUNCTION public.st_polygonfromtext(text, integer) OWNER TO aire;
-
---
 -- Name: st_polygonfromtext(text); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9581,19 +9574,15 @@ CREATE FUNCTION st_polygonfromtext(text) RETURNS geometry
 ALTER FUNCTION public.st_polygonfromtext(text) OWNER TO aire;
 
 --
--- Name: st_polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_polygonfromtext(text, integer); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_polygonfromwkb(bytea, integer) RETURNS geometry
+CREATE FUNCTION st_polygonfromtext(text, integer) RETURNS geometry
     LANGUAGE sql IMMUTABLE STRICT
-    AS $_$
-	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1,$2)) = 'POLYGON'
-	THEN ST_GeomFromWKB($1, $2)
-	ELSE NULL END
-	$_$;
+    AS $_$SELECT PolyFromText($1, $2)$_$;
 
 
-ALTER FUNCTION public.st_polygonfromwkb(bytea, integer) OWNER TO aire;
+ALTER FUNCTION public.st_polygonfromtext(text, integer) OWNER TO aire;
 
 --
 -- Name: st_polygonfromwkb(bytea); Type: FUNCTION; Schema: public; Owner: aire
@@ -9609,6 +9598,21 @@ CREATE FUNCTION st_polygonfromwkb(bytea) RETURNS geometry
 
 
 ALTER FUNCTION public.st_polygonfromwkb(bytea) OWNER TO aire;
+
+--
+-- Name: st_polygonfromwkb(bytea, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_polygonfromwkb(bytea, integer) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$
+	SELECT CASE WHEN geometrytype(ST_GeomFromWKB($1,$2)) = 'POLYGON'
+	THEN ST_GeomFromWKB($1, $2)
+	ELSE NULL END
+	$_$;
+
+
+ALTER FUNCTION public.st_polygonfromwkb(bytea, integer) OWNER TO aire;
 
 --
 -- Name: st_polygonize(geometry[]); Type: FUNCTION; Schema: public; Owner: aire
@@ -9743,17 +9747,6 @@ CREATE FUNCTION st_rotatez(geometry, double precision) RETURNS geometry
 ALTER FUNCTION public.st_rotatez(geometry, double precision) OWNER TO aire;
 
 --
--- Name: st_scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_scale(geometry, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT affine($1,  $2, 0, 0,  0, $3, 0,  0, 0, $4,  0, 0, 0)$_$;
-
-
-ALTER FUNCTION public.st_scale(geometry, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: st_scale(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -9763,6 +9756,17 @@ CREATE FUNCTION st_scale(geometry, double precision, double precision) RETURNS g
 
 
 ALTER FUNCTION public.st_scale(geometry, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: st_scale(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_scale(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT affine($1,  $2, 0, 0,  0, $3, 0,  0, 0, $4,  0, 0, 0)$_$;
+
+
+ALTER FUNCTION public.st_scale(geometry, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: st_segmentize(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -9853,15 +9857,15 @@ CREATE FUNCTION st_simplifypreservetopology(geometry, double precision) RETURNS 
 ALTER FUNCTION public.st_simplifypreservetopology(geometry, double precision) OWNER TO aire;
 
 --
--- Name: st_snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'LWGEOM_snaptogrid';
+CREATE FUNCTION st_snaptogrid(geometry, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT ST_SnapToGrid($1, 0, 0, $2, $2)$_$;
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO aire;
+ALTER FUNCTION public.st_snaptogrid(geometry, double precision) OWNER TO aire;
 
 --
 -- Name: st_snaptogrid(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -9875,15 +9879,15 @@ CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision) RETU
 ALTER FUNCTION public.st_snaptogrid(geometry, double precision, double precision) OWNER TO aire;
 
 --
--- Name: st_snaptogrid(geometry, double precision); Type: FUNCTION; Schema: public; Owner: aire
+-- Name: st_snaptogrid(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
-CREATE FUNCTION st_snaptogrid(geometry, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT ST_SnapToGrid($1, 0, 0, $2, $2)$_$;
+CREATE FUNCTION st_snaptogrid(geometry, double precision, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'LWGEOM_snaptogrid';
 
 
-ALTER FUNCTION public.st_snaptogrid(geometry, double precision) OWNER TO aire;
+ALTER FUNCTION public.st_snaptogrid(geometry, double precision, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: st_snaptogrid(geometry, geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -10018,17 +10022,6 @@ CREATE FUNCTION st_transform(geometry, integer) RETURNS geometry
 ALTER FUNCTION public.st_transform(geometry, integer) OWNER TO aire;
 
 --
--- Name: st_translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_translate(geometry, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT affine($1, 1, 0, 0, 0, 1, 0, 0, 0, 1, $2, $3, $4)$_$;
-
-
-ALTER FUNCTION public.st_translate(geometry, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: st_translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -10038,6 +10031,17 @@ CREATE FUNCTION st_translate(geometry, double precision, double precision) RETUR
 
 
 ALTER FUNCTION public.st_translate(geometry, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: st_translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_translate(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT affine($1, 1, 0, 0, 0, 1, 0, 0, 0, 1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.st_translate(geometry, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: st_transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -10052,17 +10056,6 @@ CREATE FUNCTION st_transscale(geometry, double precision, double precision, doub
 ALTER FUNCTION public.st_transscale(geometry, double precision, double precision, double precision, double precision) OWNER TO aire;
 
 --
--- Name: st_union(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION st_union(geometry, geometry) RETURNS geometry
-    LANGUAGE c IMMUTABLE STRICT
-    AS '$libdir/postgis-1.5', 'geomunion';
-
-
-ALTER FUNCTION public.st_union(geometry, geometry) OWNER TO aire;
-
---
 -- Name: st_union(geometry[]); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -10072,6 +10065,17 @@ CREATE FUNCTION st_union(geometry[]) RETURNS geometry
 
 
 ALTER FUNCTION public.st_union(geometry[]) OWNER TO aire;
+
+--
+-- Name: st_union(geometry, geometry); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION st_union(geometry, geometry) RETURNS geometry
+    LANGUAGE c IMMUTABLE STRICT
+    AS '$libdir/postgis-1.5', 'geomunion';
+
+
+ALTER FUNCTION public.st_union(geometry, geometry) OWNER TO aire;
 
 --
 -- Name: st_unite_garray(geometry[]); Type: FUNCTION; Schema: public; Owner: aire
@@ -10316,17 +10320,6 @@ CREATE FUNCTION transform(geometry, integer) RETURNS geometry
 ALTER FUNCTION public.transform(geometry, integer) OWNER TO aire;
 
 --
--- Name: translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION translate(geometry, double precision, double precision, double precision) RETURNS geometry
-    LANGUAGE sql IMMUTABLE STRICT
-    AS $_$SELECT affine($1, 1, 0, 0, 0, 1, 0, 0, 0, 1, $2, $3, $4)$_$;
-
-
-ALTER FUNCTION public.translate(geometry, double precision, double precision, double precision) OWNER TO aire;
-
---
 -- Name: translate(geometry, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
 --
 
@@ -10336,6 +10329,17 @@ CREATE FUNCTION translate(geometry, double precision, double precision) RETURNS 
 
 
 ALTER FUNCTION public.translate(geometry, double precision, double precision) OWNER TO aire;
+
+--
+-- Name: translate(geometry, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION translate(geometry, double precision, double precision, double precision) RETURNS geometry
+    LANGUAGE sql IMMUTABLE STRICT
+    AS $_$SELECT affine($1, 1, 0, 0, 0, 1, 0, 0, 0, 1, $2, $3, $4)$_$;
+
+
+ALTER FUNCTION public.translate(geometry, double precision, double precision, double precision) OWNER TO aire;
 
 --
 -- Name: transscale(geometry, double precision, double precision, double precision, double precision); Type: FUNCTION; Schema: public; Owner: aire
@@ -10386,6 +10390,42 @@ $_$;
 
 
 ALTER FUNCTION public.unlockrows(text) OWNER TO aire;
+
+--
+-- Name: updategeometrysrid(character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION updategeometrysrid(character varying, character varying, integer) RETURNS text
+    LANGUAGE plpgsql STRICT
+    AS $_$
+DECLARE
+	ret  text;
+BEGIN
+	SELECT UpdateGeometrySRID('','',$1,$2,$3) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.updategeometrysrid(character varying, character varying, integer) OWNER TO aire;
+
+--
+-- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
+--
+
+CREATE FUNCTION updategeometrysrid(character varying, character varying, character varying, integer) RETURNS text
+    LANGUAGE plpgsql STRICT
+    AS $_$
+DECLARE
+	ret  text;
+BEGIN
+	SELECT UpdateGeometrySRID('',$1,$2,$3,$4) into ret;
+	RETURN ret;
+END;
+$_$;
+
+
+ALTER FUNCTION public.updategeometrysrid(character varying, character varying, character varying, integer) OWNER TO aire;
 
 --
 -- Name: updategeometrysrid(character varying, character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
@@ -10471,42 +10511,6 @@ $_$;
 
 
 ALTER FUNCTION public.updategeometrysrid(character varying, character varying, character varying, character varying, integer) OWNER TO aire;
-
---
--- Name: updategeometrysrid(character varying, character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION updategeometrysrid(character varying, character varying, character varying, integer) RETURNS text
-    LANGUAGE plpgsql STRICT
-    AS $_$
-DECLARE
-	ret  text;
-BEGIN
-	SELECT UpdateGeometrySRID('',$1,$2,$3,$4) into ret;
-	RETURN ret;
-END;
-$_$;
-
-
-ALTER FUNCTION public.updategeometrysrid(character varying, character varying, character varying, integer) OWNER TO aire;
-
---
--- Name: updategeometrysrid(character varying, character varying, integer); Type: FUNCTION; Schema: public; Owner: aire
---
-
-CREATE FUNCTION updategeometrysrid(character varying, character varying, integer) RETURNS text
-    LANGUAGE plpgsql STRICT
-    AS $_$
-DECLARE
-	ret  text;
-BEGIN
-	SELECT UpdateGeometrySRID('','',$1,$2,$3) into ret;
-	RETURN ret;
-END;
-$_$;
-
-
-ALTER FUNCTION public.updategeometrysrid(character varying, character varying, integer) OWNER TO aire;
 
 --
 -- Name: width(chip); Type: FUNCTION; Schema: public; Owner: aire
@@ -11349,6065 +11353,136 @@ ALTER OPERATOR CLASS public.gist_geometry_ops USING gist OWNER TO aire;
 SET search_path = pg_catalog;
 
 --
--- Name: CAST (public.box2d AS public.box3d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box2d AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box2d AS public.box3d) WITH FUNCTION public.box3d(public.box2d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box2d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box2d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box2d AS public.geometry) WITH FUNCTION public.geometry(public.box2d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS box); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d AS box); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d AS box) WITH FUNCTION public.box(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS public.box2d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d AS public.box2d) WITH FUNCTION public.box2d(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d AS public.geometry) WITH FUNCTION public.geometry(public.box3d) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d_extent AS public.box2d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d_extent AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d_extent AS public.box2d) WITH FUNCTION public.box2d(public.box3d_extent) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d_extent AS public.box3d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d_extent AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d_extent AS public.box3d) WITH FUNCTION public.box3d_extent(public.box3d_extent) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.box3d_extent AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.box3d_extent AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.box3d_extent AS public.geometry) WITH FUNCTION public.geometry(public.box3d_extent) AS IMPLICIT;
 
 
 --
--- Name: CAST (bytea AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (bytea AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (bytea AS public.geometry) WITH FUNCTION public.geometry(bytea) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.chip AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.chip AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.chip AS public.geometry) WITH FUNCTION public.geometry(public.chip) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geography AS public.geography); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geography AS public.geography); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geography AS public.geography) WITH FUNCTION public.geography(public.geography, integer, boolean) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geography AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geography AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geography AS public.geometry) WITH FUNCTION public.geometry(public.geography);
 
 
 --
--- Name: CAST (public.geometry AS box); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS box); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS box) WITH FUNCTION public.box(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS public.box2d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS public.box2d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS public.box2d) WITH FUNCTION public.box2d(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS public.box3d); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS public.box3d); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS public.box3d) WITH FUNCTION public.box3d(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS bytea); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS bytea); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS bytea) WITH FUNCTION public.bytea(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS public.geography); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS public.geography); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS public.geography) WITH FUNCTION public.geography(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (public.geometry AS text); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (public.geometry AS text); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (public.geometry AS text) WITH FUNCTION public.text(public.geometry) AS IMPLICIT;
 
 
 --
--- Name: CAST (text AS public.geometry); Type: CAST; Schema: pg_catalog; Owner:
+-- Name: CAST (text AS public.geometry); Type: CAST; Schema: pg_catalog; Owner: 
 --
 
 CREATE CAST (text AS public.geometry) WITH FUNCTION public.geometry(text) AS IMPLICIT;
-
-
-SET search_path = public, pg_catalog;
-
-SET default_tablespace = '';
-
-SET default_with_oids = false;
-
---
--- Name: anam_eu27_nuts2006_gdp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu27_nuts2006_gdp2007 (
-    ogc_fid integer NOT NULL,
-    id character(5),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(5),
-    name character(70),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    gdp_2007 numeric(9,2),
-    data__so numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu27_nuts2006_gdp2007 OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu27_nuts2006_gdp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu27_nuts2006_gdp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu27_nuts2006_gdp2007_ogc_fid_seq OWNED BY anam_eu27_nuts2006_gdp2007.ogc_fid;
-
-
---
--- Name: anam_eu27_nuts2006_gdpppp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu27_nuts2006_gdpppp2007 (
-    ogc_fid integer NOT NULL,
-    id character(5),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(5),
-    name character(70),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    gdp_ppp_20 numeric(9,2),
-    data__so numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu27_nuts2006_gdpppp2007 OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq OWNED BY anam_eu27_nuts2006_gdpppp2007.ogc_fid;
-
-
---
--- Name: anam_eu27_nuts2006_mal_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu27_nuts2006_mal_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(59),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    male_lev_4 numeric(7,2),
-    source numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu27_nuts2006_mal_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu27_nuts2006_mal_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu27_nuts2006_rd_exp_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu27_nuts2006_rd_exp_tot (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(2),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu27_nuts2006_rd_exp_tot OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq OWNED BY anam_eu27_nuts2006_rd_exp_tot.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_fem_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_fem_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(59),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    fem_lev__4 numeric(7,2),
-    data__s numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_fem_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu31_nuts2006_fem_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_gdp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_gdp2007 (
-    ogc_fid integer NOT NULL,
-    id character(10),
-    gdp_2007 numeric(19,16),
-    nuts0 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts23 numeric(1,0),
-    nuts3 numeric(1,0)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_gdp2007 OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_gdp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_gdp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_gdp2007_ogc_fid_seq OWNED BY anam_eu31_nuts2006_gdp2007.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_gdpppp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_gdpppp2007 (
-    ogc_fid integer NOT NULL,
-    id character(5),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(5),
-    name character(70),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    gdp_ppp_20 numeric(9,2),
-    data__so numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_gdpppp2007 OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq OWNED BY anam_eu31_nuts2006_gdpppp2007.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(59),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    tot_lev__4 numeric(7,2),
-    source numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu31_nuts2006_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_mal_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_mal_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id_1 character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id character(3),
-    name character(59),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    male_lev_4 numeric(7,2),
-    source numeric(4,2),
-    id_12 character(4)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_mal_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu31_nuts2006_mal_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_popt2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_popt2007 (
-    ogc_fid integer NOT NULL,
-    id character(10),
-    popt_2007 numeric(19,16),
-    nuts0 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts23 numeric(1,0),
-    nuts3 numeric(1,0)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_popt2007 OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_popt2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_popt2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_popt2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_popt2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_popt2007_ogc_fid_seq OWNED BY anam_eu31_nuts2006_popt2007.ogc_fid;
-
-
---
--- Name: anam_eu31_nuts2006_tot_act_pop; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu31_nuts2006_tot_act_pop (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(59),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(19,15),
-    zoning character(254),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    tot_act_po numeric(7,2),
-    data__s numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu31_nuts2006_tot_act_pop OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq OWNED BY anam_eu31_nuts2006_tot_act_pop.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts0_tot_lev_educ_total; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts0_tot_lev_educ_total (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(2),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts0_tot_lev_educ_total OWNER TO aire;
-
---
--- Name: anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq OWNED BY anam_eu34_nuts0_tot_lev_educ_total.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_fem_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(63),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    fem_lev__4 numeric(7,2),
-    data__s numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot3; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_fem_lev_educ_tot3 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot3 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq OWNED BY anam_eu34_nuts2006_fem_lev_educ_tot3.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot5; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_fem_lev_educ_tot5 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot5 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq OWNED BY anam_eu34_nuts2006_fem_lev_educ_tot5.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu34_nuts2006_fem_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_gdp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_gdp2007 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    nuts3 numeric(1,0),
-    nuts23 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts0 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_gdp2007 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_gdp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_gdp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_gdp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_gdp2007_ogc_fid_seq OWNED BY anam_eu34_nuts2006_gdp2007.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_gdpppp2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_gdpppp2007 (
-    ogc_fid integer NOT NULL,
-    id character(5),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(5),
-    name character(70),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    gdp_ppp_20 numeric(9,2),
-    data__so numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_gdpppp2007 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq OWNED BY anam_eu34_nuts2006_gdpppp2007.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(63),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    tot_lev__4 numeric(7,2),
-    source numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot1; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_lev_educ_tot1 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts0 character(50),
-    nuts1 character(50),
-    nuts2 character(50),
-    nuts23 character(50),
-    nuts3 character(50),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot1 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq OWNED BY anam_eu34_nuts2006_lev_educ_tot1.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot2; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_lev_educ_tot2 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts0 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts23 numeric(1,0),
-    nuts3 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot2 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot21; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_lev_educ_tot21 (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    nuts0 numeric(4,0),
-    nuts1 numeric(4,0),
-    nuts2 numeric(4,0),
-    nuts23 numeric(4,0),
-    nuts3 numeric(4,0)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot21 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq OWNED BY anam_eu34_nuts2006_lev_educ_tot21.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot22; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_lev_educ_tot22 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts0 numeric(4,0),
-    nuts1 numeric(4,0),
-    nuts2 numeric(4,0),
-    nuts23 numeric(4,0),
-    nuts3 numeric(4,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot22 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq OWNED BY anam_eu34_nuts2006_lev_educ_tot22.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq OWNED BY anam_eu34_nuts2006_lev_educ_tot2.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu34_nuts2006_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_mal_lev_educ_tot (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(63),
-    level0 numeric(19,15),
-    level1 numeric(19,15),
-    level2 numeric(4,2),
-    level23 numeric(19,15),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    male_lev_4 numeric(7,2),
-    source numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_mal_lev_educ_tot OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot4; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_mal_lev_educ_tot4 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts1 numeric(4,2),
-    nuts2 numeric(4,2),
-    nuts23 numeric(4,2),
-    nuts3 numeric(4,2),
-    nuts0 numeric(9,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_mal_lev_educ_tot4 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq OWNED BY anam_eu34_nuts2006_mal_lev_educ_tot4.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq OWNED BY anam_eu34_nuts2006_mal_lev_educ_tot.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_nb_empl_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_nb_empl_tot (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    level0 numeric(19,16),
-    level1 numeric(19,16),
-    level2 numeric(19,16),
-    level23 numeric(19,16),
-    level3 numeric(19,16),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_nb_empl_tot OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq OWNED BY anam_eu34_nuts2006_nb_empl_tot.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_popt2007; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_popt2007 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    nuts0 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts23 numeric(1,0),
-    nuts3 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_popt2007 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_popt2007_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_popt2007_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_popt2007_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_popt2007_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_popt2007_ogc_fid_seq OWNED BY anam_eu34_nuts2006_popt2007.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_rd_exp_tot (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    level0 numeric(33,16),
-    level1 numeric(33,16),
-    level2 numeric(33,16),
-    level23 numeric(33,16),
-    level3 numeric(33,16),
-    rd_exp_tot numeric(33,16),
-    rd_exp_totd numeric(33,16),
-    sizeerror numeric(33,16),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_rd_exp_tot OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot2; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_rd_exp_tot2 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    level0 numeric(33,16),
-    level1 numeric(33,16),
-    level2 numeric(33,16),
-    level23 numeric(33,16),
-    level3 numeric(33,16),
-    rd_exp_tot numeric(33,16),
-    rd_exp_totd numeric(33,16),
-    sizeerror numeric(33,16),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_rd_exp_tot2 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq OWNED BY anam_eu34_nuts2006_rd_exp_tot2.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq OWNED BY anam_eu34_nuts2006_rd_exp_tot.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop (
-    ogc_fid integer NOT NULL,
-    id character(4),
-    fid_1 numeric(9,0),
-    objectid numeric(7,2),
-    id_1 character(4),
-    name character(63),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    zoning character(4),
-    data__leve character(6),
-    data__nuts numeric(7,2),
-    tot_act_po numeric(7,2),
-    data__s numeric(4,2)
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop2; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop2 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts0 numeric(4,0),
-    nuts1 numeric(4,0),
-    nuts2 numeric(4,0),
-    nuts23 numeric(4,0),
-    nuts3 numeric(4,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop2 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop2.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop3; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop3 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop3 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop3.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop4; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop4 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop4 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop4.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop5; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop5 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop5 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop5.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop6; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop6 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop6 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop6.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop7; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2006_tot_act_pop7 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    level0 numeric(4,2),
-    level1 numeric(4,2),
-    level2 numeric(4,2),
-    level23 numeric(4,2),
-    level3 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop7 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop7.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq OWNED BY anam_eu34_nuts2006_tot_act_pop.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_gdp2008; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_gdp2008 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    zoning character(254),
-    nuts3 numeric(17,15),
-    nuts23 numeric(17,15),
-    nuts2 numeric(17,15),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_gdp2008 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_gdp2008_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_gdp2008_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_gdp2008_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_gdp2008_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_gdp2008_ogc_fid_seq OWNED BY anam_eu34_nuts2010_gdp2008.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_gdppps2008; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_gdppps2008 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    nuts3 numeric(17,15),
-    zoning character(254),
-    nuts23 numeric(17,15),
-    nuts2 numeric(17,15),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_gdppps2008 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_gdppps2008_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_gdppps2008_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_gdppps2008_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_gdppps2008_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_gdppps2008_ogc_fid_seq OWNED BY anam_eu34_nuts2010_gdppps2008.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_pop15_64_2009; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_pop15_64_2009 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    nuts2 numeric(17,15),
-    zoning character(254),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_pop15_64_2009 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq OWNED BY anam_eu34_nuts2010_pop15_64_2009.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_popt2009; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_popt2009 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    nuts2 numeric(17,15),
-    zoning character(254),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_popt2009 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_popt2009_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_popt2009_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_popt2009_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_popt2009_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_popt2009_ogc_fid_seq OWNED BY anam_eu34_nuts2010_popt2009.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_popt2011; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_popt2011 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(5),
-    nuts3 numeric(17,15),
-    zoning character(4),
-    nuts23 numeric(17,15),
-    nuts2 numeric(17,15),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_popt2011 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_popt2011_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_popt2011_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_popt2011_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_popt2011_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_popt2011_ogc_fid_seq OWNED BY anam_eu34_nuts2010_popt2011.ogc_fid;
-
-
---
--- Name: anam_eu34_nuts2010_unemp2009; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_eu34_nuts2010_unemp2009 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(4),
-    nuts2 numeric(17,15),
-    zoning character(4),
-    nuts1 numeric(17,15),
-    nuts0 numeric(17,15),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_eu34_nuts2010_unemp2009 OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_unemp2009_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_eu34_nuts2010_unemp2009_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_eu34_nuts2010_unemp2009_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_eu34_nuts2010_unemp2009_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_eu34_nuts2010_unemp2009_ogc_fid_seq OWNED BY anam_eu34_nuts2010_unemp2009.ogc_fid;
-
-
---
--- Name: anam_nuts2006_nb_empl_tot; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE anam_nuts2006_nb_empl_tot (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    level0 numeric(19,16),
-    level1 numeric(19,16),
-    level2 numeric(19,16),
-    level23 numeric(19,16),
-    level3 numeric(19,16),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.anam_nuts2006_nb_empl_tot OWNER TO aire;
-
---
--- Name: anam_nuts2006_nb_empl_tot_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE anam_nuts2006_nb_empl_tot_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.anam_nuts2006_nb_empl_tot_ogc_fid_seq OWNER TO aire;
-
---
--- Name: anam_nuts2006_nb_empl_tot_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE anam_nuts2006_nb_empl_tot_ogc_fid_seq OWNED BY anam_nuts2006_nb_empl_tot.ogc_fid;
-
-
---
--- Name: data_2010_economy; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_2010_economy (
-    id character(6),
-    name character varying,
-    nutsversion integer,
-    level character varying,
-    gdp2008 integer,
-    gdppps2008 integer
-);
-
-
-ALTER TABLE public.data_2010_economy OWNER TO aire;
-
---
--- Name: data_2010_environment; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_2010_environment (
-    id character(6),
-    name character varying,
-    nutsversion integer,
-    level character varying,
-    area_t2011 double precision,
-    artificial_surfaces double precision,
-    agricultural_areas double precision,
-    forest_and_semi_natural_areas double precision,
-    wetlands double precision,
-    water_bodies double precision,
-    urban_fabric double precision,
-    industrial_commercial_and_transport_units double precision,
-    mine_dump_and_construction_sites double precision,
-    artificial_non_agricultural_vegetated_areas double precision,
-    arable_land double precision,
-    permanent_crops double precision,
-    pastures double precision,
-    heterogeneous_agricultural_areas double precision,
-    forests double precision,
-    scrub_and_or_herbaceous_vegetation_associations double precision,
-    open_spaces_with_little_or_no_vegetation double precision,
-    inland_wetlands double precision,
-    maritime_wetlands double precision,
-    inland_waters double precision,
-    marine_waters double precision
-);
-
-
-ALTER TABLE public.data_2010_environment OWNER TO aire;
-
---
--- Name: data_2010_labour_market; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_2010_labour_market (
-    id character(6),
-    name character varying,
-    nutsversion integer,
-    level character varying,
-    act2010 double precision,
-    unemp2010 double precision,
-    emp2010 double precision
-);
-
-
-ALTER TABLE public.data_2010_labour_market OWNER TO aire;
-
---
--- Name: data_2010_population; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_2010_population (
-    id character(6),
-    name character varying,
-    nutsversion integer,
-    level character varying,
-    birth2010 double precision,
-    death2010 double precision,
-    pop_t2011 double precision,
-    pop_0_14_t2009 double precision,
-    pop_15_64_t2009 double precision,
-    pop_65plus_t2009 double precision,
-    pop_age_t2009 double precision,
-    pop_t2008 double precision
-);
-
-
-ALTER TABLE public.data_2010_population OWNER TO aire;
-
---
--- Name: data_2010_population_popt_2008_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_2010_population_popt_2008_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_2010_population_popt_2008_seq OWNER TO aire;
-
---
--- Name: data_2010_population_popt_2008_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_2010_population_popt_2008_seq OWNED BY data_2010_population.pop_t2008;
-
-
---
--- Name: data_economy; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_economy (
-    ogc_fid integer NOT NULL,
-    level character varying,
-    nuts_version integer,
-    name character varying,
-    gdp_2001 double precision,
-    source1 character varying,
-    gdp_2007 double precision,
-    source2 character varying,
-    gdp_ppp_2001 double precision,
-    source3 character varying,
-    gdp_ppp_2007 double precision,
-    source4 character varying,
-    rd_exp_tot_2007 double precision,
-    source5 character varying,
-    rd_exp_bes_2007 double precision,
-    source6 character varying,
-    rd_exp_gov_2007 double precision,
-    source7 character varying,
-    rd_exp_hes_2007 double precision,
-    source8 character varying,
-    rd_exp_pnp_2007 double precision,
-    source9 character varying,
-    id character(6)
-);
-
-
-ALTER TABLE public.data_economy OWNER TO aire;
-
---
--- Name: data_economy_nuts2; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_economy_nuts2 (
-    ogc_fid integer,
-    id character(6),
-    name character varying,
-    gdp_2007 double precision
-);
-
-
-ALTER TABLE public.data_economy_nuts2 OWNER TO aire;
-
---
--- Name: data_economy_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_economy_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_economy_ogc_fid_seq OWNER TO aire;
-
---
--- Name: data_economy_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_economy_ogc_fid_seq OWNED BY data_economy.ogc_fid;
-
-
---
--- Name: data_education; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_education (
-    ogc_fid integer NOT NULL,
-    level character varying,
-    nuts_version integer,
-    name character varying,
-    fem_lev_educ_0_2_2009 double precision,
-    source1 character varying,
-    fem_lev_educ_3_4_2009 double precision,
-    source2 character varying,
-    fem_lev_educ_5_6_2009 double precision,
-    source3 character varying,
-    fem_lev_educ_nrp_2009 double precision,
-    source4 character varying,
-    fem_lev_educ_total_2009 double precision,
-    source5 character varying,
-    male_lev_educ_0_2_2009 double precision,
-    source6 character varying,
-    male_lev_educ_3_4_2009 double precision,
-    source7 character varying,
-    male_lev_educ_5_6_2009 double precision,
-    source8 character varying,
-    male_lev_educ_nrp_2009 double precision,
-    source9 character varying,
-    male_lev_educ_total_2009 double precision,
-    source10 character varying,
-    tot_lev_educ_0_2_2009 double precision,
-    source11 character varying,
-    tot_lev_educ_3_4_2009 double precision,
-    source12 character varying,
-    tot_lev_educ_5_6_2009 double precision,
-    source13 character varying,
-    tot_lev_educ_nrp_2009 double precision,
-    source14 character varying,
-    tot_lev_educ_total_2009 double precision,
-    source15 character varying,
-    nb_stud_niveduc_0_2007 integer,
-    source16 character varying,
-    nb_stud_niveduc_0_2008 integer,
-    source17 character varying,
-    nb_stud_niveduc_1_3_2007 integer,
-    source18 character varying,
-    nb_stud_niveduc_1_3_2008 integer,
-    source19 character varying,
-    nb_stud_niveduc_1_2007 integer,
-    source20 character varying,
-    nb_stud_niveduc_1_2008 integer,
-    source21 character varying,
-    nb_stud_niveduc_2_2007 integer,
-    source22 character varying,
-    nb_stud_niveduc_2_2008 integer,
-    source23 character varying,
-    nb_stud_niveduc_3_2007 integer,
-    source24 character varying,
-    nb_stud_niveduc_3_2008 integer,
-    source25 character varying,
-    nb_stud_niveduc_3_gen_2007 integer,
-    source26 character varying,
-    nb_stud_niveduc_3_gen_2008 integer,
-    source27 character varying,
-    nb_stud_niveduc_3_pro_2007 integer,
-    source28 character varying,
-    nb_stud_niveduc_3_pro_2008 integer,
-    source29 character varying,
-    nb_stud_niveduc_4_2007 integer,
-    source30 character varying,
-    nb_stud_niveduc_4_2008 integer,
-    source31 character varying,
-    nb_stud_niveduc_4_gen_2007 integer,
-    source32 character varying,
-    nb_stud_niveduc_4_gen_2008 integer,
-    source33 character varying,
-    nb_stud_niveduc_4_pro_2007 integer,
-    source34 character varying,
-    nb_stud_niveduc_4_pro_2008 integer,
-    source35 character varying,
-    nb_stud_niveduc_5_6_2007 integer,
-    source36 character varying,
-    nb_stud_niveduc_5_6_2008 integer,
-    source37 character varying,
-    nb_stud_niveduc_5_gen_2007 integer,
-    source38 character varying,
-    nb_stud_niveduc_5_gen_2008 integer,
-    source39 character varying,
-    nb_stud_niveduc_5_pro_2007 integer,
-    source40 character varying,
-    nb_stud_niveduc_5_pro_2008 integer,
-    source41 character varying,
-    nb_stud_niveduc_6_2007 integer,
-    source42 character varying,
-    nb_stud_niveduc_6_2008 integer,
-    source43 character varying,
-    nb_stud_niveduc_unk_2007 integer,
-    source44 character varying,
-    nb_stud_niveduc_unk_2008 integer,
-    source45 character varying,
-    nb_stud_total_2007 integer,
-    source46 character varying,
-    nb_stud_total_2008 integer,
-    source47 character varying,
-    id character(6)
-);
-
-
-ALTER TABLE public.data_education OWNER TO aire;
-
---
--- Name: data_education_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_education_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_education_ogc_fid_seq OWNER TO aire;
-
---
--- Name: data_education_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_education_ogc_fid_seq OWNED BY data_education.ogc_fid;
-
-
---
--- Name: data_environment; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_environment (
-    ogc_fid integer NOT NULL,
-    level character varying,
-    nuts_version integer,
-    area_t_2008 double precision,
-    source1 character varying,
-    area_t_gis_2008 double precision,
-    source2 character varying,
-    artificial_lands_2000 integer,
-    source3 character varying,
-    agricultural_areas_2000 integer,
-    source4 character varying,
-    forest_semi_nat_areas_2000 integer,
-    source5 character varying,
-    wetlands_area_2000 integer,
-    source6 character varying,
-    waterbodies_areas_2000 integer,
-    source7 character varying,
-    urban_fabric_areas_2000 integer,
-    source8 character varying,
-    industr_comm_transp_areas_2000 integer,
-    source9 character varying,
-    mine_dump_constr_areas_2000 integer,
-    source10 character varying,
-    artificial_non_agric_areas_2000 integer,
-    source11 character varying,
-    arable_land_areas_2000 integer,
-    source12 character varying,
-    permanent_crops_areas_2000 integer,
-    source13 character varying,
-    pastures_areas_2000 integer,
-    source14 character varying,
-    heterogeneous_agr_areas_2000 integer,
-    source15 character varying,
-    forests_areas_2000 integer,
-    source16 character varying,
-    scrub_herbaceous_areas_2000 integer,
-    source17 character varying,
-    open_spaces_littleveget_areas_2000 integer,
-    source18 character varying,
-    inland_wetlands_areas_2000 integer,
-    source19 character varying,
-    maritime_wetlands_area_2000 integer,
-    source20 character varying,
-    inland_waters_area_2000 integer,
-    source21 character varying,
-    marine_waters_area_2000 integer,
-    source22 character varying,
-    total_clc_area_2000 integer,
-    source23 character varying,
-    id character(6)
-);
-
-
-ALTER TABLE public.data_environment OWNER TO aire;
-
---
--- Name: data_environment_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_environment_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_environment_ogc_fid_seq OWNER TO aire;
-
---
--- Name: data_environment_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_environment_ogc_fid_seq OWNED BY data_environment.ogc_fid;
-
-
---
--- Name: data_labour_market; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_labour_market (
-    ogc_fid integer NOT NULL,
-    level character varying,
-    nuts_version integer,
-    name character varying,
-    fem_act_pop_2007 double precision,
-    source1 character varying,
-    male_act_pop_2007 double precision,
-    source2 character varying,
-    tot_act_pop_2007 double precision,
-    source3 character varying,
-    act_pop_fem_15_24_2007 double precision,
-    source4 character varying,
-    act_pop_male_15_24_2007 double precision,
-    source5 character varying,
-    act_pop_total_15_24_2007 double precision,
-    source6 character varying,
-    pop_fem_empl_15_24_2007 double precision,
-    source7 character varying,
-    pop_fem_empl_25_34_2007 double precision,
-    source8 character varying,
-    pop_fem_empl_35_44_2007 double precision,
-    source9 character varying,
-    pop_fem_empl_45_54_2007 double precision,
-    source10 character varying,
-    pop_fem_empl_55_64_2007 double precision,
-    source11 character varying,
-    pop_fem_empl_65_more_2007 double precision,
-    source12 character varying,
-    pop_fem_empl_total_2007 double precision,
-    source13 character varying,
-    pop_male_empl_15_24_2007 double precision,
-    source14 character varying,
-    pop_male_empl_25_34_2007 double precision,
-    source15 character varying,
-    pop_male_empl_35_44_2007 double precision,
-    source16 character varying,
-    pop_male_empl_45_54_2007 double precision,
-    source17 character varying,
-    pop_male_empl_55_64_2007 double precision,
-    source18 character varying,
-    pop_male_empl_65_more_2007 double precision,
-    source19 character varying,
-    pop_male_empl_total_2007 double precision,
-    source20 character varying,
-    pop_total_empl_15_24_2007 double precision,
-    source21 character varying,
-    pop_total_empl_25_34_2007 double precision,
-    source22 character varying,
-    pop_total_empl_35_44_2007 double precision,
-    source23 character varying,
-    pop_total_empl_45_54_2007 double precision,
-    source24 character varying,
-    pop_total_empl_55_64_2007 double precision,
-    source25 character varying,
-    pop_total_empl_65_more_2007 double precision,
-    source26 character varying,
-    pop_total_empl_2007 double precision,
-    source27 character varying,
-    nb_unemp_fem_1524_2007 double precision,
-    source28 character varying,
-    nb_unemp_male_1524_2007 double precision,
-    source29 character varying,
-    nb_unemp_tot_1524_2007 double precision,
-    source30 character varying,
-    nb_unemp_fem_15more_2007 double precision,
-    source31 character varying,
-    nb_unemp_male_15more_2007 double precision,
-    source32 character varying,
-    nb_unemp_tot_15more_2007 double precision,
-    source33 character varying,
-    nb_unemp_fem_25more_2007 double precision,
-    source34 character varying,
-    nb_unemp_male_25more_2007 double precision,
-    source35 character varying,
-    nb_unemp_tot_25more_2007 double precision,
-    source36 character varying,
-    nb_lgterm_unemp_2007 double precision,
-    source37 character varying,
-    nb_empl_agr_2009 double precision,
-    source38 character varying,
-    nb_empl_ind_2009 double precision,
-    source39 character varying,
-    nb_empl_constr_2009 double precision,
-    source40 character varying,
-    nb_empl_wholesale_serv_2009 double precision,
-    source41 character varying,
-    nb_empl_info_com_2009 double precision,
-    source42 character varying,
-    nb_empl_fina_2009 double precision,
-    source43 character varying,
-    nb_empl_estate_2009 double precision,
-    source44 character varying,
-    nb_empl_scient_tech_2009 double precision,
-    source45 character varying,
-    nb_empl_public_2009 double precision,
-    source46 character varying,
-    nb_empl_arts_recreation_2009 double precision,
-    source47 character varying,
-    nb_empl_nrp_2009 double precision,
-    source48 character varying,
-    nb_empl_total_2009 double precision,
-    source49 character varying,
-    id character(6) NOT NULL
-);
-
-
-ALTER TABLE public.data_labour_market OWNER TO aire;
-
---
--- Name: data_labour_market_id_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_labour_market_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_labour_market_id_seq OWNER TO aire;
-
---
--- Name: data_labour_market_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_labour_market_id_seq OWNED BY data_labour_market.id;
-
-
---
--- Name: data_labour_market_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_labour_market_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_labour_market_ogc_fid_seq OWNER TO aire;
-
---
--- Name: data_labour_market_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_labour_market_ogc_fid_seq OWNED BY data_labour_market.ogc_fid;
-
-
---
--- Name: data_population; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_population (
-    ogc_fid integer NOT NULL,
-    oldid character varying(6),
-    level character varying,
-    nuts_version integer,
-    name character varying,
-    popt_2007 integer,
-    source1 character varying,
-    popf_2007 integer,
-    source2 character varying,
-    popm_2007 integer,
-    source3 character varying,
-    popf0_4_2007 integer,
-    source4 character varying,
-    popf5_9_2007 integer,
-    source5 character varying,
-    popf10_14_2007 integer,
-    source6 character varying,
-    popf15_19_2007 integer,
-    source7 character varying,
-    popf20_24_2007 integer,
-    source8 character varying,
-    popf25_29_2007 integer,
-    source9 character varying,
-    popf30_34_2007 integer,
-    source10 character varying,
-    popf35_39_2007 integer,
-    source11 character varying,
-    popf40_44_2007 integer,
-    source12 character varying,
-    popf45_49_2007 integer,
-    source13 character varying,
-    popf50_54_2007 integer,
-    source14 character varying,
-    popf55_59_2007 integer,
-    source15 character varying,
-    popf60_64_2007 integer,
-    source16 character varying,
-    popf65_69_2007 integer,
-    source17 character varying,
-    popf70_74_2007 integer,
-    source18 character varying,
-    popf75_79_2007 integer,
-    source19 character varying,
-    popf80_84_2007 integer,
-    source20 character varying,
-    popf85_over_2007 integer,
-    source21 character varying,
-    popm0_4_2007 integer,
-    source22 character varying,
-    popm5_9_2007 integer,
-    source23 character varying,
-    popm10_14_2007 integer,
-    source24 character varying,
-    popm15_19_2007 integer,
-    source25 character varying,
-    popm20_24_2007 integer,
-    source26 character varying,
-    popm25_29_2007 integer,
-    source27 character varying,
-    popm30_34_2007 integer,
-    source28 character varying,
-    popm35_39_2007 integer,
-    source29 character varying,
-    popm40_44_2007 integer,
-    source30 character varying,
-    popm45_49_2007 integer,
-    source31 character varying,
-    popm50_54_2007 integer,
-    source32 character varying,
-    popm55_59_2007 integer,
-    source33 character varying,
-    popm60_64_2007 integer,
-    source34 character varying,
-    popm65_69_2007 integer,
-    source35 character varying,
-    popm70_74_2007 integer,
-    source36 character varying,
-    popm75_79_2007 integer,
-    source37 character varying,
-    popm80_84_2007 integer,
-    source38 character varying,
-    popm85_over_2007 integer,
-    source39 character varying,
-    popfem_0_15_2007 integer,
-    source40 character varying,
-    popfem_15_64_2007 integer,
-    source41 character varying,
-    popfem_65_over_2007 integer,
-    source42 character varying,
-    popmale_0_15_2007 integer,
-    source43 character varying,
-    popmale_15_64_2007 integer,
-    source44 character varying,
-    popmale_65_over_2007 integer,
-    source45 character varying,
-    nbdeath_2007 double precision,
-    source46 character varying,
-    nbbirth_2007 double precision,
-    source47 character varying,
-    lifeexpectfem_2007 double precision,
-    source48 character varying,
-    lifeexpectmale_2007 double precision,
-    source49 character varying,
-    lifeexpecttot_2007 double precision,
-    source50 character varying,
-    totfertrate_2007 double precision,
-    source51 character varying,
-    id character(6),
-    nombre_un integer,
-    pop_0_15_2007 integer,
-    pop_15_64_2007 integer,
-    pop_65_over_2007 integer
-);
-
-
-ALTER TABLE public.data_population OWNER TO aire;
-
---
--- Name: data_population_nuts1; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE data_population_nuts1 (
-    ogc_fid integer,
-    id character(6),
-    name character varying,
-    popt_2007 integer
-);
-
-
-ALTER TABLE public.data_population_nuts1 OWNER TO aire;
-
---
--- Name: data_population_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE data_population_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.data_population_ogc_fid_seq OWNER TO aire;
-
---
--- Name: data_population_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE data_population_ogc_fid_seq OWNED BY data_population.ogc_fid;
-
-
---
--- Name: eu31_nuts2_2010_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE eu31_nuts2_2010_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.eu31_nuts2_2010_to_grid OWNER TO aire;
-
---
--- Name: eu31_nuts2_2010_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE eu31_nuts2_2010_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.eu31_nuts2_2010_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: eu31_nuts2_2010_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE eu31_nuts2_2010_to_grid_ogc_fid_seq OWNED BY eu31_nuts2_2010_to_grid.ogc_fid;
-
-
---
--- Name: eu31_nuts3_2006_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE eu31_nuts3_2006_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.eu31_nuts3_2006_to_grid OWNER TO aire;
-
---
--- Name: eu31_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE eu31_nuts3_2006_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.eu31_nuts3_2006_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: eu31_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE eu31_nuts3_2006_to_grid_ogc_fid_seq OWNED BY eu31_nuts3_2006_to_grid.ogc_fid;
-
-
---
--- Name: eu31_nuts3_2010_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE eu31_nuts3_2010_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.eu31_nuts3_2010_to_grid OWNER TO aire;
-
---
--- Name: eu31_nuts3_2010_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE eu31_nuts3_2010_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.eu31_nuts3_2010_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: eu31_nuts3_2010_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE eu31_nuts3_2010_to_grid_ogc_fid_seq OWNED BY eu31_nuts3_2010_to_grid.ogc_fid;
-
-
---
--- Name: eu34_nuts2_2010_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE eu34_nuts2_2010_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.eu34_nuts2_2010_to_grid OWNER TO aire;
-
---
--- Name: eu34_nuts2_2010_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE eu34_nuts2_2010_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.eu34_nuts2_2010_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: eu34_nuts2_2010_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE eu34_nuts2_2010_to_grid_ogc_fid_seq OWNED BY eu34_nuts2_2010_to_grid.ogc_fid;
-
-
---
--- Name: eu34_nuts3_2010_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE eu34_nuts3_2010_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.eu34_nuts3_2010_to_grid OWNER TO aire;
-
---
--- Name: eu34_nuts3_2010_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE eu34_nuts3_2010_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.eu34_nuts3_2010_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: eu34_nuts3_2010_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE eu34_nuts3_2010_to_grid_ogc_fid_seq OWNED BY eu34_nuts3_2010_to_grid.ogc_fid;
-
-
---
--- Name: geography_columns; Type: VIEW; Schema: public; Owner: aire
---
-
-CREATE VIEW geography_columns AS
-    SELECT current_database() AS f_table_catalog, n.nspname AS f_table_schema, c.relname AS f_table_name, a.attname AS f_geography_column, geography_typmod_dims(a.atttypmod) AS coord_dimension, geography_typmod_srid(a.atttypmod) AS srid, geography_typmod_type(a.atttypmod) AS type FROM pg_class c, pg_attribute a, pg_type t, pg_namespace n WHERE ((((((c.relkind = ANY (ARRAY['r'::"char", 'v'::"char"])) AND (t.typname = 'geography'::name)) AND (a.attisdropped = false)) AND (a.atttypid = t.oid)) AND (a.attrelid = c.oid)) AND (c.relnamespace = n.oid));
-
-
-ALTER TABLE public.geography_columns OWNER TO aire;
-
---
--- Name: geom_eu27_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(1,0),
-    "100km" numeric(1,0),
-    "200km" numeric(1,0),
-    "300km" numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_grid OWNER TO aire;
-
---
--- Name: geom_eu27_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_grid_ogc_fid_seq OWNED BY geom_eu27_grid.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2006_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2006_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    nuts0 integer,
-    nuts1 integer,
-    nuts2 integer,
-    nuts23 integer,
-    nuts3 integer,
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2006_centres OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2006_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2006_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2006_centres_ogc_fid_seq OWNED BY geom_eu27_nuts2006_centres.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2006_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2006_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(20),
-    id_a character(20),
-    id_b character(10),
-    nuts0 numeric(1,0),
-    nuts1 numeric(1,0),
-    nuts2 numeric(1,0),
-    nuts3 numeric(1,0),
-    nuts23 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2006_contig OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2006_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2006_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2006_contig_ogc_fid_seq OWNED BY geom_eu27_nuts2006_contig.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2006_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2006_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    nuts0 integer,
-    nuts1 integer,
-    nuts2 integer,
-    nuts23 integer,
-    nuts3 integer,
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2006_poly OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2006_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2006_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2006_poly_ogc_fid_seq OWNED BY geom_eu27_nuts2006_poly.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2010_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2010_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2010_centres OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2010_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2010_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2010_centres_ogc_fid_seq OWNED BY geom_eu27_nuts2010_centres.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2010_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2010_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(11),
-    id_a character(5),
-    id_b character(5),
-    nuts3 numeric(4,2),
-    nuts23 numeric(4,2),
-    nuts2 numeric(4,2),
-    nuts1 numeric(4,2),
-    nuts0 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2010_contig OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2010_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2010_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2010_contig_ogc_fid_seq OWNED BY geom_eu27_nuts2010_contig.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2010_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2010_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(4,0),
-    "100km" numeric(4,0),
-    "200km" numeric(4,0),
-    "300km" numeric(4,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2010_grid OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2010_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2010_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2010_grid_ogc_fid_seq OWNED BY geom_eu27_nuts2010_grid.ogc_fid;
-
-
---
--- Name: geom_eu27_nuts2010_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu27_nuts2010_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu27_nuts2010_poly OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu27_nuts2010_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu27_nuts2010_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu27_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu27_nuts2010_poly_ogc_fid_seq OWNED BY geom_eu27_nuts2010_poly.ogc_fid;
-
-
---
--- Name: geom_eu31_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(1,0),
-    "100km" numeric(1,0),
-    "200km" numeric(1,0),
-    "300km" numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_grid OWNER TO aire;
-
---
--- Name: geom_eu31_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_grid_ogc_fid_seq OWNED BY geom_eu31_grid.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2006_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2006_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2006_centres OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2006_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2006_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2006_centres_ogc_fid_seq OWNED BY geom_eu31_nuts2006_centres.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2006_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2006_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(20),
-    id_a character(20),
-    id_b character(10),
-    level0 numeric(1,0),
-    level1 numeric(1,0),
-    level2 numeric(1,0),
-    level3 numeric(1,0),
-    level23 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2006_contig OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2006_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2006_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2006_contig_ogc_fid_seq OWNED BY geom_eu31_nuts2006_contig.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2006_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2006_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2006_poly OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2006_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2006_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2006_poly_ogc_fid_seq OWNED BY geom_eu31_nuts2006_poly.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2006_poly_wkt; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2006_poly_wkt (
-    ogc_fid integer,
-    wkb_geometry text,
-    id character(10)
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2006_poly_wkt OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2010_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2010_centres OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2010_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2010_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2010_centres_ogc_fid_seq OWNED BY geom_eu31_nuts2010_centres.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2010_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2010_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(11),
-    id_a character(5),
-    id_b character(5),
-    nuts3 numeric(4,2),
-    nuts23 numeric(4,2),
-    nuts2 numeric(4,2),
-    nuts1 numeric(4,2),
-    nuts0 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2010_contig OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2010_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2010_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2010_contig_ogc_fid_seq OWNED BY geom_eu31_nuts2010_contig.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2010_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2010_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(4,0),
-    "100km" numeric(4,0),
-    "200km" numeric(4,0),
-    "300km" numeric(4,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2010_grid OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2010_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2010_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2010_grid_ogc_fid_seq OWNED BY geom_eu31_nuts2010_grid.ogc_fid;
-
-
---
--- Name: geom_eu31_nuts2010_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu31_nuts2010_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu31_nuts2010_poly OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu31_nuts2010_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu31_nuts2010_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu31_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu31_nuts2010_poly_ogc_fid_seq OWNED BY geom_eu31_nuts2010_poly.ogc_fid;
-
-
---
--- Name: geom_eu34_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(1,0),
-    "100km" numeric(1,0),
-    "200km" numeric(1,0),
-    "300km" numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_grid OWNER TO aire;
-
---
--- Name: geom_eu34_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_grid_ogc_fid_seq OWNED BY geom_eu34_grid.ogc_fid;
-
-
---
--- Name: geom_eu34_grid_wkt; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_grid_wkt (
-    ogc_fid integer,
-    wkb_geometry text,
-    id character(50),
-    "50km" numeric(1,0),
-    "100km" numeric(1,0),
-    "200km" numeric(1,0),
-    "300km" numeric(1,0)
-);
-
-
-ALTER TABLE public.geom_eu34_grid_wkt OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2006_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2006_centres OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2006_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2006_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2006_centres_ogc_fid_seq OWNED BY geom_eu34_nuts2006_centres.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2006_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2006_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(20),
-    id_a character(20),
-    id_b character(10),
-    level0 numeric(1,0),
-    level1 numeric(1,0),
-    level2 numeric(1,0),
-    level3 numeric(1,0),
-    level23 numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2006_contig OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2006_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2006_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2006_contig_ogc_fid_seq OWNED BY geom_eu34_nuts2006_contig.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2006_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2006_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(10),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2006_poly OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2006_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2006_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2006_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2006_poly_ogc_fid_seq OWNED BY geom_eu34_nuts2006_poly.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2010_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2010_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2010_centres OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2010_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2010_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2010_centres_ogc_fid_seq OWNED BY geom_eu34_nuts2010_centres.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2010_contig; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2010_contig (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(11),
-    id_a character(5),
-    id_b character(5),
-    nuts3 numeric(4,2),
-    nuts2 numeric(4,2),
-    nuts23 numeric(4,2),
-    nuts1 numeric(4,2),
-    nuts0 numeric(4,2),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2010_contig OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2010_contig_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2010_contig_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_contig_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2010_contig_ogc_fid_seq OWNED BY geom_eu34_nuts2010_contig.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2010_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2010_grid (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(50),
-    "50km" numeric(1,0),
-    "100km" numeric(1,0),
-    "200km" numeric(1,0),
-    "300km" numeric(1,0),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2010_grid OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2010_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2010_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2010_grid_ogc_fid_seq OWNED BY geom_eu34_nuts2010_grid.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2010_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2010_poly (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character(254),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2010_poly OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_eu34_nuts2010_poly_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_eu34_nuts2010_poly_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2010_poly_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_eu34_nuts2010_poly_ogc_fid_seq OWNED BY geom_eu34_nuts2010_poly.ogc_fid;
-
-
---
--- Name: geom_eu34_nuts2_2006_poly; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2_2006_poly (
-    ogc_fid integer,
-    wkb_geometry geometry,
-    id character(10)
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2_2006_poly OWNER TO aire;
-
---
--- Name: geom_eu34_nuts2_2006_poly_bak; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_eu34_nuts2_2006_poly_bak (
-    ogc_fid integer,
-    wkt text,
-    id character(10)
-);
-
-
-ALTER TABLE public.geom_eu34_nuts2_2006_poly_bak OWNER TO aire;
-
---
--- Name: geom_test_nuts2006_anamorph_d3avg; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_test_nuts2006_anamorph_d3avg (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    pop_t_2003 numeric(19,11),
-    id character(6),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_test_nuts2006_anamorph_d3avg OWNER TO aire;
-
---
--- Name: geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq OWNED BY geom_test_nuts2006_anamorph_d3avg.ogc_fid;
-
-
---
--- Name: geom_test_popt2003_gauss160km; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geom_test_popt2003_gauss160km (
-    ogc_fid integer NOT NULL,
-    stock double precision,
-    wkb_geometry geometry,
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 3035))
-);
-
-
-ALTER TABLE public.geom_test_popt2003_gauss160km OWNER TO aire;
-
---
--- Name: geom_test_popt2003_gauss160km_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE geom_test_popt2003_gauss160km_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.geom_test_popt2003_gauss160km_ogc_fid_seq OWNER TO aire;
-
---
--- Name: geom_test_popt2003_gauss160km_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE geom_test_popt2003_gauss160km_ogc_fid_seq OWNED BY geom_test_popt2003_gauss160km.ogc_fid;
-
-
-SET default_with_oids = true;
-
---
--- Name: geometry_columns; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE geometry_columns (
-    f_table_catalog character varying(256) NOT NULL,
-    f_table_schema character varying(256) NOT NULL,
-    f_table_name character varying(256) NOT NULL,
-    f_geometry_column character varying(256) NOT NULL,
-    coord_dimension integer NOT NULL,
-    srid integer NOT NULL,
-    type character varying(30) NOT NULL
-);
-
-
-ALTER TABLE public.geometry_columns OWNER TO aire;
-
-SET default_with_oids = false;
-
---
--- Name: info_eu31_nuts2_2006_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE info_eu31_nuts2_2006_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.info_eu31_nuts2_2006_to_grid OWNER TO aire;
-
---
--- Name: info_eu31_nuts2_2006_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE info_eu31_nuts2_2006_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.info_eu31_nuts2_2006_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: info_eu31_nuts2_2006_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE info_eu31_nuts2_2006_to_grid_ogc_fid_seq OWNED BY info_eu31_nuts2_2006_to_grid.ogc_fid;
-
-
---
--- Name: info_eu31_nuts3_2006_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE info_eu31_nuts3_2006_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.info_eu31_nuts3_2006_to_grid OWNER TO aire;
-
---
--- Name: info_eu31_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE info_eu31_nuts3_2006_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.info_eu31_nuts3_2006_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: info_eu31_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE info_eu31_nuts3_2006_to_grid_ogc_fid_seq OWNED BY info_eu31_nuts3_2006_to_grid.ogc_fid;
-
-
---
--- Name: info_eu34_nuts2_2006_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE info_eu34_nuts2_2006_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.info_eu34_nuts2_2006_to_grid OWNER TO aire;
-
---
--- Name: info_eu34_nuts2_2006_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE info_eu34_nuts2_2006_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.info_eu34_nuts2_2006_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: info_eu34_nuts2_2006_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE info_eu34_nuts2_2006_to_grid_ogc_fid_seq OWNED BY info_eu34_nuts2_2006_to_grid.ogc_fid;
-
-
---
--- Name: info_eu34_nuts3_2006_to_grid; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE info_eu34_nuts3_2006_to_grid (
-    ogc_fid integer NOT NULL,
-    id character varying,
-    nuts character varying,
-    pct double precision
-);
-
-
-ALTER TABLE public.info_eu34_nuts3_2006_to_grid OWNER TO aire;
-
---
--- Name: info_eu34_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE info_eu34_nuts3_2006_to_grid_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.info_eu34_nuts3_2006_to_grid_ogc_fid_seq OWNER TO aire;
-
---
--- Name: info_eu34_nuts3_2006_to_grid_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE info_eu34_nuts3_2006_to_grid_ogc_fid_seq OWNED BY info_eu34_nuts3_2006_to_grid.ogc_fid;
-
-
---
--- Name: info_nuts2006; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE info_nuts2006 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    id character varying,
-    name character varying,
-    nuts0 integer,
-    nuts1 integer,
-    nuts2 integer,
-    nuts23 integer,
-    nuts3 integer,
-    zoning character varying,
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = (-1)))
-);
-
-
-ALTER TABLE public.info_nuts2006 OWNER TO aire;
-
---
--- Name: info_nuts2006_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE info_nuts2006_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.info_nuts2006_ogc_fid_seq OWNER TO aire;
-
---
--- Name: info_nuts2006_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE info_nuts2006_ogc_fid_seq OWNED BY info_nuts2006.ogc_fid;
-
-
---
--- Name: nuts2010; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE nuts2010 (
-    id character(6),
-    name character varying,
-    nuts0 integer,
-    nuts1 integer,
-    nuts2 integer,
-    nuts23 integer,
-    nuts3 integer,
-    zoning character varying
-);
-
-
-ALTER TABLE public.nuts2010 OWNER TO aire;
-
---
--- Name: p_popt_2003_gauss160km; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE p_popt_2003_gauss160km (
-    oid integer NOT NULL,
-    stock double precision,
-    wkb_geometry geometry,
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((srid(wkb_geometry) = 32767))
-);
-
-
-ALTER TABLE public.p_popt_2003_gauss160km OWNER TO aire;
-
---
--- Name: p_popt_2003_gauss160km_oid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE p_popt_2003_gauss160km_oid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.p_popt_2003_gauss160km_oid_seq OWNER TO aire;
-
---
--- Name: p_popt_2003_gauss160km_oid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE p_popt_2003_gauss160km_oid_seq OWNED BY p_popt_2003_gauss160km.oid;
-
-
---
--- Name: spatial_ref_sys; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE spatial_ref_sys (
-    srid integer NOT NULL,
-    auth_name character varying(256),
-    auth_srid integer,
-    srtext character varying(2048),
-    proj4text character varying(2048)
-);
-
-
-ALTER TABLE public.spatial_ref_sys OWNER TO aire;
-
---
--- Name: world_wuts5; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE world_wuts5 (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    code_wuts5 character(13),
-    code_iso3 character(11),
-    name character(27),
-    code_wuts4 character(5),
-    code_wuts3 character(4),
-    code_wuts2 character(3),
-    code_wuts1 character(2),
-    code_wut_1 character(1),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 900917))
-);
-
-
-ALTER TABLE public.world_wuts5 OWNER TO aire;
-
---
--- Name: world_wuts5_centres; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE world_wuts5_centres (
-    ogc_fid integer NOT NULL,
-    wkb_geometry geometry,
-    code_wuts5 character(13),
-    CONSTRAINT enforce_dims_wkb_geometry CHECK ((st_ndims(wkb_geometry) = 2)),
-    CONSTRAINT enforce_geotype_wkb_geometry CHECK (((geometrytype(wkb_geometry) = 'POINT'::text) OR (wkb_geometry IS NULL))),
-    CONSTRAINT enforce_srid_wkb_geometry CHECK ((st_srid(wkb_geometry) = 900917))
-);
-
-
-ALTER TABLE public.world_wuts5_centres OWNER TO aire;
-
---
--- Name: world_wuts5_centres_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE world_wuts5_centres_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.world_wuts5_centres_ogc_fid_seq OWNER TO aire;
-
---
--- Name: world_wuts5_centres_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE world_wuts5_centres_ogc_fid_seq OWNED BY world_wuts5_centres.ogc_fid;
-
-
---
--- Name: world_wuts5_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE world_wuts5_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.world_wuts5_ogc_fid_seq OWNER TO aire;
-
---
--- Name: world_wuts5_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE world_wuts5_ogc_fid_seq OWNED BY world_wuts5.ogc_fid;
-
-
---
--- Name: wuts_maddison; Type: TABLE; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE TABLE wuts_maddison (
-    ogc_fid integer NOT NULL,
-    wuts5 character varying,
-    wuts5_names character varying,
-    eiw_iso character varying,
-    pop_1998 double precision,
-    gdp_1998 double precision
-);
-
-
-ALTER TABLE public.wuts_maddison OWNER TO aire;
-
---
--- Name: wuts_maddison_ogc_fid_seq; Type: SEQUENCE; Schema: public; Owner: aire
---
-
-CREATE SEQUENCE wuts_maddison_ogc_fid_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MAXVALUE
-    NO MINVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.wuts_maddison_ogc_fid_seq OWNER TO aire;
-
---
--- Name: wuts_maddison_ogc_fid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: aire
---
-
-ALTER SEQUENCE wuts_maddison_ogc_fid_seq OWNED BY wuts_maddison.ogc_fid;
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu27_nuts2006_gdp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu27_nuts2006_gdp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu27_nuts2006_gdpppp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu27_nuts2006_gdpppp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu27_nuts2006_mal_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu27_nuts2006_mal_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu27_nuts2006_rd_exp_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu27_nuts2006_rd_exp_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_fem_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_fem_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_gdp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_gdp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_gdpppp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_gdpppp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_mal_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_mal_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_popt2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_popt2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu31_nuts2006_tot_act_pop ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu31_nuts2006_tot_act_pop_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts0_tot_lev_educ_total ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts0_tot_lev_educ_total_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_fem_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_fem_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_fem_lev_educ_tot3 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_fem_lev_educ_tot3_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_fem_lev_educ_tot5 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_fem_lev_educ_tot5_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_gdp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_gdp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_gdpppp2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_gdpppp2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_lev_educ_tot1 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_lev_educ_tot1_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_lev_educ_tot2 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_lev_educ_tot2_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_lev_educ_tot21 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_lev_educ_tot21_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_lev_educ_tot22 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_lev_educ_tot22_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_mal_lev_educ_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_mal_lev_educ_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_mal_lev_educ_tot4 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_mal_lev_educ_tot4_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_nb_empl_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_nb_empl_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_popt2007 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_popt2007_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_rd_exp_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_rd_exp_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_rd_exp_tot2 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_rd_exp_tot2_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop2 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop2_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop3 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop3_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop4 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop4_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop5 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop5_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop6 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop6_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2006_tot_act_pop7 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2006_tot_act_pop7_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_gdp2008 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_gdp2008_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_gdppps2008 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_gdppps2008_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_pop15_64_2009 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_pop15_64_2009_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_popt2009 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_popt2009_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_popt2011 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_popt2011_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_eu34_nuts2010_unemp2009 ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_eu34_nuts2010_unemp2009_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE anam_nuts2006_nb_empl_tot ALTER COLUMN ogc_fid SET DEFAULT nextval('anam_nuts2006_nb_empl_tot_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_economy ALTER COLUMN ogc_fid SET DEFAULT nextval('data_economy_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_education ALTER COLUMN ogc_fid SET DEFAULT nextval('data_education_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_environment ALTER COLUMN ogc_fid SET DEFAULT nextval('data_environment_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_labour_market ALTER COLUMN ogc_fid SET DEFAULT nextval('data_labour_market_ogc_fid_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_labour_market ALTER COLUMN id SET DEFAULT nextval('data_labour_market_id_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE data_population ALTER COLUMN ogc_fid SET DEFAULT nextval('data_population_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE eu31_nuts2_2010_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('eu31_nuts2_2010_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE eu31_nuts3_2006_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('eu31_nuts3_2006_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE eu31_nuts3_2010_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('eu31_nuts3_2010_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE eu34_nuts2_2010_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('eu34_nuts2_2010_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE eu34_nuts3_2010_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('eu34_nuts3_2010_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2006_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2006_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2006_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2006_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2006_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2006_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2010_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2010_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2010_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2010_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2010_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2010_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu27_nuts2010_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu27_nuts2010_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2006_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2006_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2006_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2006_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2006_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2006_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2010_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2010_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2010_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2010_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2010_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2010_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu31_nuts2010_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu31_nuts2010_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2006_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2006_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2006_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2006_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2006_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2006_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2010_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2010_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2010_contig ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2010_contig_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2010_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2010_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_eu34_nuts2010_poly ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_eu34_nuts2010_poly_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_test_nuts2006_anamorph_d3avg ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_test_nuts2006_anamorph_d3avg_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE geom_test_popt2003_gauss160km ALTER COLUMN ogc_fid SET DEFAULT nextval('geom_test_popt2003_gauss160km_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE info_eu31_nuts2_2006_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('info_eu31_nuts2_2006_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE info_eu31_nuts3_2006_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('info_eu31_nuts3_2006_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE info_eu34_nuts2_2006_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('info_eu34_nuts2_2006_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE info_eu34_nuts3_2006_to_grid ALTER COLUMN ogc_fid SET DEFAULT nextval('info_eu34_nuts3_2006_to_grid_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE info_nuts2006 ALTER COLUMN ogc_fid SET DEFAULT nextval('info_nuts2006_ogc_fid_seq'::regclass);
-
-
---
--- Name: oid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE p_popt_2003_gauss160km ALTER COLUMN oid SET DEFAULT nextval('p_popt_2003_gauss160km_oid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE world_wuts5 ALTER COLUMN ogc_fid SET DEFAULT nextval('world_wuts5_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE world_wuts5_centres ALTER COLUMN ogc_fid SET DEFAULT nextval('world_wuts5_centres_ogc_fid_seq'::regclass);
-
-
---
--- Name: ogc_fid; Type: DEFAULT; Schema: public; Owner: aire
---
-
-ALTER TABLE wuts_maddison ALTER COLUMN ogc_fid SET DEFAULT nextval('wuts_maddison_ogc_fid_seq'::regclass);
-
-
---
--- Name: anam_eu27_nuts2006_gdp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu27_nuts2006_gdp2007
-    ADD CONSTRAINT anam_eu27_nuts2006_gdp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu27_nuts2006_gdpppp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu27_nuts2006_gdpppp2007
-    ADD CONSTRAINT anam_eu27_nuts2006_gdpppp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu27_nuts2006_mal_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu27_nuts2006_mal_lev_educ_tot
-    ADD CONSTRAINT anam_eu27_nuts2006_mal_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu27_nuts2006_rd_exp_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu27_nuts2006_rd_exp_tot
-    ADD CONSTRAINT anam_eu27_nuts2006_rd_exp_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_fem_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_fem_lev_educ_tot
-    ADD CONSTRAINT anam_eu31_nuts2006_fem_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_gdp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_gdp2007
-    ADD CONSTRAINT anam_eu31_nuts2006_gdp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_gdpppp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_gdpppp2007
-    ADD CONSTRAINT anam_eu31_nuts2006_gdpppp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_lev_educ_tot
-    ADD CONSTRAINT anam_eu31_nuts2006_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_mal_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_mal_lev_educ_tot
-    ADD CONSTRAINT anam_eu31_nuts2006_mal_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_popt2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_popt2007
-    ADD CONSTRAINT anam_eu31_nuts2006_popt2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu31_nuts2006_tot_act_pop_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu31_nuts2006_tot_act_pop
-    ADD CONSTRAINT anam_eu31_nuts2006_tot_act_pop_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts0_tot_lev_educ_total_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts0_tot_lev_educ_total
-    ADD CONSTRAINT anam_eu34_nuts0_tot_lev_educ_total_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot3_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_fem_lev_educ_tot3
-    ADD CONSTRAINT anam_eu34_nuts2006_fem_lev_educ_tot3_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot5_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_fem_lev_educ_tot5
-    ADD CONSTRAINT anam_eu34_nuts2006_fem_lev_educ_tot5_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_fem_lev_educ_tot
-    ADD CONSTRAINT anam_eu34_nuts2006_fem_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_gdp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_gdp2007
-    ADD CONSTRAINT anam_eu34_nuts2006_gdp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_gdpppp2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_gdpppp2007
-    ADD CONSTRAINT anam_eu34_nuts2006_gdpppp2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot1_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_lev_educ_tot1
-    ADD CONSTRAINT anam_eu34_nuts2006_lev_educ_tot1_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot21_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_lev_educ_tot21
-    ADD CONSTRAINT anam_eu34_nuts2006_lev_educ_tot21_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot22_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_lev_educ_tot22
-    ADD CONSTRAINT anam_eu34_nuts2006_lev_educ_tot22_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot2_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_lev_educ_tot2
-    ADD CONSTRAINT anam_eu34_nuts2006_lev_educ_tot2_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_lev_educ_tot
-    ADD CONSTRAINT anam_eu34_nuts2006_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot4_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_mal_lev_educ_tot4
-    ADD CONSTRAINT anam_eu34_nuts2006_mal_lev_educ_tot4_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_mal_lev_educ_tot
-    ADD CONSTRAINT anam_eu34_nuts2006_mal_lev_educ_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_nb_empl_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_nb_empl_tot
-    ADD CONSTRAINT anam_eu34_nuts2006_nb_empl_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_popt2007_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_popt2007
-    ADD CONSTRAINT anam_eu34_nuts2006_popt2007_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot2_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_rd_exp_tot2
-    ADD CONSTRAINT anam_eu34_nuts2006_rd_exp_tot2_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_rd_exp_tot
-    ADD CONSTRAINT anam_eu34_nuts2006_rd_exp_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop2_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop2
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop2_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop3_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop3
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop3_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop4_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop4
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop4_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop5_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop5
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop5_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop6_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop6
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop6_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop7_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop7
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop7_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2006_tot_act_pop
-    ADD CONSTRAINT anam_eu34_nuts2006_tot_act_pop_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_gdp2008_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_gdp2008
-    ADD CONSTRAINT anam_eu34_nuts2010_gdp2008_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_gdppps2008_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_gdppps2008
-    ADD CONSTRAINT anam_eu34_nuts2010_gdppps2008_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_pop15_64_2009_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_pop15_64_2009
-    ADD CONSTRAINT anam_eu34_nuts2010_pop15_64_2009_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_popt2009_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_popt2009
-    ADD CONSTRAINT anam_eu34_nuts2010_popt2009_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_popt2011_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_popt2011
-    ADD CONSTRAINT anam_eu34_nuts2010_popt2011_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu34_nuts2010_unemp2009_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_eu34_nuts2010_unemp2009
-    ADD CONSTRAINT anam_eu34_nuts2010_unemp2009_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_nuts2006_nb_empl_tot_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY anam_nuts2006_nb_empl_tot
-    ADD CONSTRAINT anam_nuts2006_nb_empl_tot_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: data_economy_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY data_economy
-    ADD CONSTRAINT data_economy_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: data_education_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY data_education
-    ADD CONSTRAINT data_education_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: data_environment_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY data_environment
-    ADD CONSTRAINT data_environment_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: data_labour_market_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY data_labour_market
-    ADD CONSTRAINT data_labour_market_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: data_population_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY data_population
-    ADD CONSTRAINT data_population_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: eu31_nuts2_2010_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY eu31_nuts2_2010_to_grid
-    ADD CONSTRAINT eu31_nuts2_2010_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: eu31_nuts3_2006_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY eu31_nuts3_2006_to_grid
-    ADD CONSTRAINT eu31_nuts3_2006_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: eu31_nuts3_2010_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY eu31_nuts3_2010_to_grid
-    ADD CONSTRAINT eu31_nuts3_2010_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: eu34_nuts2_2010_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY eu34_nuts2_2010_to_grid
-    ADD CONSTRAINT eu34_nuts2_2010_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: eu34_nuts3_2010_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY eu34_nuts3_2010_to_grid
-    ADD CONSTRAINT eu34_nuts3_2010_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_grid
-    ADD CONSTRAINT geom_eu27_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2006_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2006_centres
-    ADD CONSTRAINT geom_eu27_nuts2006_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2006_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2006_contig
-    ADD CONSTRAINT geom_eu27_nuts2006_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2006_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2006_poly
-    ADD CONSTRAINT geom_eu27_nuts2006_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2010_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2010_centres
-    ADD CONSTRAINT geom_eu27_nuts2010_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2010_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2010_contig
-    ADD CONSTRAINT geom_eu27_nuts2010_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2010_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2010_grid
-    ADD CONSTRAINT geom_eu27_nuts2010_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu27_nuts2010_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu27_nuts2010_poly
-    ADD CONSTRAINT geom_eu27_nuts2010_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_grid
-    ADD CONSTRAINT geom_eu31_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2006_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2006_centres
-    ADD CONSTRAINT geom_eu31_nuts2006_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2006_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2006_contig
-    ADD CONSTRAINT geom_eu31_nuts2006_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2006_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2006_poly
-    ADD CONSTRAINT geom_eu31_nuts2006_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2010_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2010_centres
-    ADD CONSTRAINT geom_eu31_nuts2010_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2010_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2010_contig
-    ADD CONSTRAINT geom_eu31_nuts2010_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2010_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2010_grid
-    ADD CONSTRAINT geom_eu31_nuts2010_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu31_nuts2010_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu31_nuts2010_poly
-    ADD CONSTRAINT geom_eu31_nuts2010_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_grid
-    ADD CONSTRAINT geom_eu34_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2006_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2006_centres
-    ADD CONSTRAINT geom_eu34_nuts2006_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2006_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2006_contig
-    ADD CONSTRAINT geom_eu34_nuts2006_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2006_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2006_poly
-    ADD CONSTRAINT geom_eu34_nuts2006_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2010_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2010_centres
-    ADD CONSTRAINT geom_eu34_nuts2010_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2010_contig_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2010_contig
-    ADD CONSTRAINT geom_eu34_nuts2010_contig_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2010_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2010_grid
-    ADD CONSTRAINT geom_eu34_nuts2010_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_eu34_nuts2010_poly_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_eu34_nuts2010_poly
-    ADD CONSTRAINT geom_eu34_nuts2010_poly_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geom_test_nuts2006_anamorph_d3avg_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geom_test_nuts2006_anamorph_d3avg
-    ADD CONSTRAINT geom_test_nuts2006_anamorph_d3avg_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: geometry_columns_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY geometry_columns
-    ADD CONSTRAINT geometry_columns_pk PRIMARY KEY (f_table_catalog, f_table_schema, f_table_name, f_geometry_column);
-
-
---
--- Name: info_eu31_nuts2_2006_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY info_eu31_nuts2_2006_to_grid
-    ADD CONSTRAINT info_eu31_nuts2_2006_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: info_eu31_nuts3_2006_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY info_eu31_nuts3_2006_to_grid
-    ADD CONSTRAINT info_eu31_nuts3_2006_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: info_eu34_nuts2_2006_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY info_eu34_nuts2_2006_to_grid
-    ADD CONSTRAINT info_eu34_nuts2_2006_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: info_eu34_nuts3_2006_to_grid_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY info_eu34_nuts3_2006_to_grid
-    ADD CONSTRAINT info_eu34_nuts3_2006_to_grid_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: info_nuts2006_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY info_nuts2006
-    ADD CONSTRAINT info_nuts2006_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: spatial_ref_sys_pkey; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY spatial_ref_sys
-    ADD CONSTRAINT spatial_ref_sys_pkey PRIMARY KEY (srid);
-
-
---
--- Name: world_wuts5_centres_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY world_wuts5_centres
-    ADD CONSTRAINT world_wuts5_centres_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: world_wuts5_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY world_wuts5
-    ADD CONSTRAINT world_wuts5_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: wuts_maddison_pk; Type: CONSTRAINT; Schema: public; Owner: aire; Tablespace:
---
-
-ALTER TABLE ONLY wuts_maddison
-    ADD CONSTRAINT wuts_maddison_pk PRIMARY KEY (ogc_fid);
-
-
---
--- Name: anam_eu27_nuts2006_rd_exp_tot_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu27_nuts2006_rd_exp_tot_geom_idx ON anam_eu27_nuts2006_rd_exp_tot USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts0_tot_lev_educ_total_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts0_tot_lev_educ_total_geom_idx ON anam_eu34_nuts0_tot_lev_educ_total USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot3_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_fem_lev_educ_tot3_geom_idx ON anam_eu34_nuts2006_fem_lev_educ_tot3 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_fem_lev_educ_tot5_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_fem_lev_educ_tot5_geom_idx ON anam_eu34_nuts2006_fem_lev_educ_tot5 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_gdp2007_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_gdp2007_geom_idx ON anam_eu34_nuts2006_gdp2007 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot1_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_lev_educ_tot1_geom_idx ON anam_eu34_nuts2006_lev_educ_tot1 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot22_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_lev_educ_tot22_geom_idx ON anam_eu34_nuts2006_lev_educ_tot22 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_lev_educ_tot2_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_lev_educ_tot2_geom_idx ON anam_eu34_nuts2006_lev_educ_tot2 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_mal_lev_educ_tot4_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_mal_lev_educ_tot4_geom_idx ON anam_eu34_nuts2006_mal_lev_educ_tot4 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_nb_empl_tot_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_nb_empl_tot_geom_idx ON anam_eu34_nuts2006_nb_empl_tot USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_popt2007_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_popt2007_geom_idx ON anam_eu34_nuts2006_popt2007 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot2_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_rd_exp_tot2_geom_idx ON anam_eu34_nuts2006_rd_exp_tot2 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_rd_exp_tot_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_rd_exp_tot_geom_idx ON anam_eu34_nuts2006_rd_exp_tot USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop2_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop2_geom_idx ON anam_eu34_nuts2006_tot_act_pop2 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop3_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop3_geom_idx ON anam_eu34_nuts2006_tot_act_pop3 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop4_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop4_geom_idx ON anam_eu34_nuts2006_tot_act_pop4 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop5_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop5_geom_idx ON anam_eu34_nuts2006_tot_act_pop5 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop6_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop6_geom_idx ON anam_eu34_nuts2006_tot_act_pop6 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2006_tot_act_pop7_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2006_tot_act_pop7_geom_idx ON anam_eu34_nuts2006_tot_act_pop7 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_gdp2008_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_gdp2008_geom_idx ON anam_eu34_nuts2010_gdp2008 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_gdppps2008_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_gdppps2008_geom_idx ON anam_eu34_nuts2010_gdppps2008 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_pop15_64_2009_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_pop15_64_2009_geom_idx ON anam_eu34_nuts2010_pop15_64_2009 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_popt2009_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_popt2009_geom_idx ON anam_eu34_nuts2010_popt2009 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_popt2011_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_popt2011_geom_idx ON anam_eu34_nuts2010_popt2011 USING gist (wkb_geometry);
-
-
---
--- Name: anam_eu34_nuts2010_unemp2009_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_eu34_nuts2010_unemp2009_geom_idx ON anam_eu34_nuts2010_unemp2009 USING gist (wkb_geometry);
-
-
---
--- Name: anam_nuts2006_nb_empl_tot_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX anam_nuts2006_nb_empl_tot_geom_idx ON anam_nuts2006_nb_empl_tot USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_grid_geom_idx ON geom_eu27_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_nuts2006_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_geom_idx ON geom_eu27_nuts2006_centres USING gist (wkb_geometry);
-
-ALTER TABLE geom_eu27_nuts2006_centres CLUSTER ON geom_eu27_nuts2006_centres_geom_idx;
-
-
---
--- Name: geom_eu27_nuts2006_centres_id_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_id_idx ON geom_eu27_nuts2006_centres USING btree (id NULLS FIRST);
-
-
---
--- Name: geom_eu27_nuts2006_centres_nuts0_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_nuts0_idx ON geom_eu27_nuts2006_centres USING btree (nuts0);
-
-
---
--- Name: geom_eu27_nuts2006_centres_nuts1_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_nuts1_idx ON geom_eu27_nuts2006_centres USING btree (nuts1);
-
-
---
--- Name: geom_eu27_nuts2006_centres_nuts23_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_nuts23_idx ON geom_eu27_nuts2006_centres USING btree (nuts23);
-
-
---
--- Name: geom_eu27_nuts2006_centres_nuts2_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_nuts2_idx ON geom_eu27_nuts2006_centres USING btree (nuts2);
-
-
---
--- Name: geom_eu27_nuts2006_centres_nuts3_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_centres_nuts3_idx ON geom_eu27_nuts2006_centres USING btree (nuts3);
-
-
---
--- Name: geom_eu27_nuts2006_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_contig_geom_idx ON geom_eu27_nuts2006_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_nuts2006_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_geom_idx ON geom_eu27_nuts2006_poly USING gist (wkb_geometry);
-
-ALTER TABLE geom_eu27_nuts2006_poly CLUSTER ON geom_eu27_nuts2006_poly_geom_idx;
-
-
---
--- Name: geom_eu27_nuts2006_poly_id_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_id_idx ON geom_eu27_nuts2006_poly USING btree (id NULLS FIRST);
-
-
---
--- Name: geom_eu27_nuts2006_poly_nuts0_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_nuts0_idx ON geom_eu27_nuts2006_poly USING btree (nuts0);
-
-
---
--- Name: geom_eu27_nuts2006_poly_nuts1_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_nuts1_idx ON geom_eu27_nuts2006_poly USING btree (nuts1);
-
-
---
--- Name: geom_eu27_nuts2006_poly_nuts23_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_nuts23_idx ON geom_eu27_nuts2006_poly USING btree (nuts23);
-
-
---
--- Name: geom_eu27_nuts2006_poly_nuts2_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_nuts2_idx ON geom_eu27_nuts2006_poly USING btree (nuts2);
-
-
---
--- Name: geom_eu27_nuts2006_poly_nuts3_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2006_poly_nuts3_idx ON geom_eu27_nuts2006_poly USING btree (nuts3);
-
-
---
--- Name: geom_eu27_nuts2010_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2010_centres_geom_idx ON geom_eu27_nuts2010_centres USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_nuts2010_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2010_contig_geom_idx ON geom_eu27_nuts2010_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_nuts2010_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2010_grid_geom_idx ON geom_eu27_nuts2010_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu27_nuts2010_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu27_nuts2010_poly_geom_idx ON geom_eu27_nuts2010_poly USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_grid_geom_idx ON geom_eu31_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2006_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2006_centres_geom_idx ON geom_eu31_nuts2006_centres USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2006_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2006_contig_geom_idx ON geom_eu31_nuts2006_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2006_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2006_poly_geom_idx ON geom_eu31_nuts2006_poly USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2010_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2010_centres_geom_idx ON geom_eu31_nuts2010_centres USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2010_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2010_contig_geom_idx ON geom_eu31_nuts2010_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2010_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2010_grid_geom_idx ON geom_eu31_nuts2010_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu31_nuts2010_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu31_nuts2010_poly_geom_idx ON geom_eu31_nuts2010_poly USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_grid_geom_idx ON geom_eu34_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2006_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2006_centres_geom_idx ON geom_eu34_nuts2006_centres USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2006_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2006_contig_geom_idx ON geom_eu34_nuts2006_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2006_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2006_poly_geom_idx ON geom_eu34_nuts2006_poly USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2010_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2010_centres_geom_idx ON geom_eu34_nuts2010_centres USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2010_contig_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2010_contig_geom_idx ON geom_eu34_nuts2010_contig USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2010_grid_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2010_grid_geom_idx ON geom_eu34_nuts2010_grid USING gist (wkb_geometry);
-
-
---
--- Name: geom_eu34_nuts2010_poly_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX geom_eu34_nuts2010_poly_geom_idx ON geom_eu34_nuts2010_poly USING gist (wkb_geometry);
-
-
---
--- Name: info_nuts2006_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX info_nuts2006_geom_idx ON info_nuts2006 USING gist (wkb_geometry);
-
-
---
--- Name: world_wuts5_centres_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX world_wuts5_centres_geom_idx ON world_wuts5_centres USING gist (wkb_geometry);
-
-
---
--- Name: world_wuts5_geom_idx; Type: INDEX; Schema: public; Owner: aire; Tablespace:
---
-
-CREATE INDEX world_wuts5_geom_idx ON world_wuts5 USING gist (wkb_geometry);
 
 
 --
@@ -17423,3 +11498,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+
