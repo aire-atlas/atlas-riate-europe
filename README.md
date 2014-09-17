@@ -20,7 +20,8 @@ sync.
 
 **You don't need to be root!** but you need [Git](http://git-scm.com/)
 and [LXC](https://linuxcontainers.org/) installed on your Linux
-system.
+system. See [Gitted](https://github.com/geonef/sysconf.gitted) for
+more info.
 
 ```
 git clone https://github.com/aire-atlas/atlas-riate-europe.git && cd atlas-riate-europe
